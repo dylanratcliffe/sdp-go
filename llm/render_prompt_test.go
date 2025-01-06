@@ -116,7 +116,7 @@ func TestItemToYAML(t *testing.T) {
 	t.Run("with a good item", func(t *testing.T) {
 		t.Parallel()
 
-		yaml, err := itemToYAML(&testFullyPopulatedItem)
+		yaml, err := ItemToYAML(&testFullyPopulatedItem)
 
 		if err != nil {
 			t.Fatal(err)
@@ -128,7 +128,7 @@ func TestItemToYAML(t *testing.T) {
 	t.Run("with nil", func(t *testing.T) {
 		t.Parallel()
 
-		yaml, err := itemToYAML(nil)
+		yaml, err := ItemToYAML(nil)
 
 		if err != nil {
 			t.Fatal(err)
@@ -269,7 +269,7 @@ func TestItemDiffToYAMLDiff(t *testing.T) {
 			After:  &after,
 		}
 
-		diff, err := itemDiffToYAMLDiff(&itemDiff)
+		diff, err := ItemDiffToYAMLDiff(&itemDiff)
 
 		if err != nil {
 			t.Fatal(err)
@@ -304,4 +304,97 @@ func TestPrettyStatus(t *testing.T) {
 			t.Errorf("prettyStatus(%v) = %v; want %v", status, result, expected)
 		}
 	}
+}
+
+func TestRemoveKnownAfterApply(t *testing.T) {
+	diff := &sdp.ItemDiff{
+		Before: &sdp.Item{
+			Attributes: &sdp.ItemAttributes{
+				AttrStruct: &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"foo":    structpb.NewStringValue("bar"),
+						"delete": structpb.NewStringValue("something"),
+						"nested": structpb.NewStructValue(&structpb.Struct{
+							Fields: map[string]*structpb.Value{
+								"foo":    structpb.NewStringValue("bar"),
+								"delete": structpb.NewStringValue("something"),
+							},
+						}),
+						"list": structpb.NewListValue(&structpb.ListValue{
+							Values: []*structpb.Value{
+								{
+									Kind: &structpb.Value_StructValue{
+										StructValue: &structpb.Struct{
+											Fields: map[string]*structpb.Value{
+												"foo":    structpb.NewStringValue("bar"),
+												"delete": structpb.NewStringValue("something"),
+											},
+										},
+									},
+								},
+							},
+						}),
+					},
+				},
+			},
+		},
+		After: &sdp.Item{
+			Attributes: &sdp.ItemAttributes{
+				AttrStruct: &structpb.Struct{
+					Fields: map[string]*structpb.Value{
+						"foo":    structpb.NewStringValue("baz"),
+						"delete": structpb.NewStringValue("(known after apply)"),
+						"nested": structpb.NewStructValue(&structpb.Struct{
+							Fields: map[string]*structpb.Value{
+								"foo":    structpb.NewStringValue("bar"),
+								"delete": structpb.NewStringValue("(known after apply)"),
+							},
+						}),
+						"list": structpb.NewListValue(&structpb.ListValue{
+							Values: []*structpb.Value{
+								{
+									Kind: &structpb.Value_StructValue{
+										StructValue: &structpb.Struct{
+											Fields: map[string]*structpb.Value{
+												"foo":    structpb.NewStringValue("bar"),
+												"delete": structpb.NewStringValue("(known after apply)"),
+											},
+										},
+									},
+								},
+							},
+						}),
+					},
+				},
+			},
+		},
+	}
+
+	diff = RemoveKnownAfterApply(diff)
+
+	val, err := diff.GetBefore().GetAttributes().Get("delete")
+	if err == nil {
+		t.Errorf("expected error, got %v", val)
+	}
+
+	val, err = diff.GetBefore().GetAttributes().Get("nested.delete")
+	if err == nil {
+		t.Errorf("expected error, got %v", val)
+	}
+
+	_, err = diff.GetAfter().GetAttributes().Get("nested.foo")
+	if err != nil {
+		t.Errorf("expected value, got %v", err)
+	}
+
+	list := diff.GetAfter().GetAttributes().GetAttrStruct().GetFields()["list"].GetListValue()
+	if len(list.GetValues()) != 1 {
+		t.Errorf("expected 1 item in list, got %v", len(list.GetValues()))
+	}
+
+	_, ok := list.GetValues()[0].GetStructValue().GetFields()["delete"]
+	if ok {
+		t.Errorf("expected no delete field in list item, got %v", ok)
+	}
+
 }

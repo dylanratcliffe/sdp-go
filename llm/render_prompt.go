@@ -38,13 +38,14 @@ import (
 func RenderPrompt(tpl string, args any) (string, error) {
 	parsed, err := template.New("tpl").Funcs(
 		template.FuncMap{
-			"trim":               trim,
-			"itemToYAML":         itemToYAML,
-			"itemDiffToYAMLDiff": itemDiffToYAMLDiff,
-			"globallyUniqueName": globallyUniqueName,
-			"prettyStatus":       prettyStatus,
-			"prettySeverity":     prettySeverity,
-			"prettyTime":         prettyTime,
+			"trim":                  trim,
+			"itemToYAML":            ItemToYAML,
+			"itemDiffToYAMLDiff":    ItemDiffToYAMLDiff,
+			"removeKnownAfterApply": RemoveKnownAfterApply,
+			"globallyUniqueName":    globallyUniqueName,
+			"prettyStatus":          prettyStatus,
+			"prettySeverity":        prettySeverity,
+			"prettyTime":            prettyTime,
 		},
 	).Parse(tpl)
 	if err != nil {
@@ -157,7 +158,7 @@ func trim(m int, s string) string {
 
 // Converts an item to a YAML representation that is simplified and suitable for
 // the LLM
-func itemToYAML(item *sdp.Item) (string, error) {
+func ItemToYAML(item *sdp.Item) (string, error) {
 	if item == nil {
 		// If the item is nil, we can't convert it to YAML, this is likely when
 		// the item is being created for example, the before state will be
@@ -204,19 +205,73 @@ func itemToYAML(item *sdp.Item) (string, error) {
 	return string(yamlBytes), nil
 }
 
+// Removes all attributes that are (known after apply)
+func RemoveKnownAfterApply(itemDiff *sdp.ItemDiff) *sdp.ItemDiff {
+	if itemDiff == nil {
+		return itemDiff
+	}
+
+	removeKnownAfterApplyFromStruct(
+		itemDiff.GetBefore().GetAttributes().GetAttrStruct(),
+		itemDiff.GetAfter().GetAttributes().GetAttrStruct(),
+	)
+
+	return itemDiff
+}
+
+// Completely removes fields that are (known after apply) in the after struct,
+// from both structs
+func removeKnownAfterApplyFromStruct(before, after *structpb.Struct) {
+	if before == nil || after == nil {
+		return
+	}
+
+	for key, value := range after.GetFields() {
+		switch value.GetKind().(type) {
+		case *structpb.Value_NullValue, *structpb.Value_NumberValue, *structpb.Value_BoolValue:
+			// Do nothing
+		case *structpb.Value_StringValue:
+			if value.GetStringValue() == "(known after apply)" {
+				delete(after.GetFields(), key)
+				delete(before.GetFields(), key)
+			}
+		case *structpb.Value_ListValue:
+			// Iterate over the list and remove any known after apply values
+			// within the child objects
+			beforeList := before.GetFields()[key].GetListValue().GetValues()
+			afterList := value.GetListValue().GetValues()
+			if len(beforeList) != len(afterList) {
+				continue
+			}
+			for i, v := range afterList {
+				switch v.GetKind().(type) {
+				case *structpb.Value_StructValue:
+					b := beforeList[i].GetStructValue()
+					a := v.GetStructValue()
+					removeKnownAfterApplyFromStruct(b, a)
+				}
+			}
+		case *structpb.Value_StructValue:
+			b := before.GetFields()[key].GetStructValue()
+			a := value.GetStructValue()
+			removeKnownAfterApplyFromStruct(b, a)
+		}
+	}
+}
+
 // Converts an itemDiff to a diff of the YAML format
-func itemDiffToYAMLDiff(itemDiff *sdp.ItemDiff) (string, error) {
+func ItemDiffToYAMLDiff(itemDiff *sdp.ItemDiff) (string, error) {
 	if itemDiff == nil {
 		return "", fmt.Errorf("itemDiff is nil")
 	}
 
 	// Convert the before and after items to YAML
-	beforeYAML, err := itemToYAML(itemDiff.GetBefore())
+	beforeYAML, err := ItemToYAML(itemDiff.GetBefore())
 	if err != nil {
 		return "", err
 	}
 
-	afterYAML, err := itemToYAML(itemDiff.GetAfter())
+	afterYAML, err := ItemToYAML(itemDiff.GetAfter())
 	if err != nil {
 		return "", err
 	}
