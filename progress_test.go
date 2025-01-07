@@ -1073,7 +1073,10 @@ func TestFastFinisher(t *testing.T) {
 
 		// Send an item
 		item := newItem()
-		item.GetAttributes().Set("name", "baz")
+		err = item.GetAttributes().Set("name", "baz")
+		if err != nil {
+			t.Fatal(err)
+		}
 		err = conn.Publish(context.Background(), q.Subject(), &QueryResponse{ResponseType: &QueryResponse_NewItem{NewItem: item}})
 		if err != nil {
 			t.Fatal(err)

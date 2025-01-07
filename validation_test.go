@@ -79,10 +79,12 @@ func TestValidateItem(t *testing.T) {
 	t.Run("item has empty UniqueAttributeValue", func(t *testing.T) {
 		i := newItem()
 
-		i.GetAttributes().Set(i.GetUniqueAttribute(), "")
+		err := i.GetAttributes().Set(i.GetUniqueAttribute(), "")
+		if err != nil {
+			t.Fatal(err)
+		}
 
-		err := i.Validate()
-
+		err = i.Validate()
 		if err == nil {
 			t.Error("expected error")
 		}

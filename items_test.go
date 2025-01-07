@@ -267,8 +267,7 @@ func TestCustomTransforms(t *testing.T) {
 			t.Fatalf("Expected user to be a map, got %T", user)
 		}
 
-		pass, _ := userMap["password"]
-
+		pass := userMap["password"]
 		if pass != "REDACTED" {
 			t.Errorf("Expected password to be REDACTED, got %v", pass)
 		}

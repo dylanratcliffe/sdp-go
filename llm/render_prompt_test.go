@@ -260,7 +260,10 @@ func TestItemDiffToYAMLDiff(t *testing.T) {
 	t.Run("with an actual difference", func(t *testing.T) {
 		after := sdp.Item{}
 		testFullyPopulatedItem.Copy(&after)
-		after.GetAttributes().Set("ami-id", "ami-87654321")
+		err := after.GetAttributes().Set("ami-id", "ami-87654321")
+		if err != nil {
+			t.Fatal(err)
+		}
 
 		itemDiff := sdp.ItemDiff{
 			Item:   testFullyPopulatedItem.Reference(),
