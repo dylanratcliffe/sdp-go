@@ -285,6 +285,17 @@ func (c *openAIConversation) SendMessage(ctx context.Context, userMessage string
 					span.SetStatus(codes.Error, err.Error())
 					return "", err
 				}
+				if messages.Messages[0].Content[0].Text == nil {
+					err = errors.New("empty text returned from API")
+					span.SetStatus(codes.Error, err.Error())
+					return "", err
+				}
+
+				response := messages.Messages[0].Content[0].Text.Value
+
+				span.SetAttributes(
+					attribute.String("ovm.llm.assistantResponse", response),
+				)
 
 				return messages.Messages[0].Content[0].Text.Value, nil
 			case openai.RunStatusIncomplete:
