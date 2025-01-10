@@ -1,5 +1,5 @@
-connectrpc.com/connect v1.17.0 h1:W0ZqMhtVzn9Zhn2yATuUokDLO5N+gIuBWMOnsQrfmZk=
-connectrpc.com/connect v1.17.0/go.mod h1:0292hj1rnx8oFrStN7cB4jjVBeqs+Yx5yDIC2prWDO8=
+connectrpc.com/connect v1.18.1 h1:PAg7CjSAGvscaf6YZKUefjoih5Z/qYkyaTrBW8xvYPw=
+connectrpc.com/connect v1.18.1/go.mod h1:0292hj1rnx8oFrStN7cB4jjVBeqs+Yx5yDIC2prWDO8=
 github.com/akedrou/textdiff v0.0.0-20230423230343-2ebdcebdccc1 h1:XfKKiQL7irIGI7nfu4a6IKhrgUHvKwhH/AnuHgZy/+U=
 github.com/akedrou/textdiff v0.0.0-20230423230343-2ebdcebdccc1/go.mod h1:PJwvxBpzqjdeomc0r8Hgc+xJC7k6z+k371tffCGXR2M=
 github.com/anthropics/anthropic-sdk-go v0.2.0-alpha.4 h1:TdGQS+RoR4AUO6gqUL74yK1dz/Arrt/WG+dxOj6Yo6A=
