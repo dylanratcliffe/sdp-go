@@ -23,7 +23,7 @@ require (
 	go.opentelemetry.io/otel/sdk v1.33.0
 	go.opentelemetry.io/otel/trace v1.33.0
 	go.uber.org/goleak v1.3.0
-	golang.org/x/oauth2 v0.24.0
+	golang.org/x/oauth2 v0.25.0
 	gonum.org/v1/gonum v0.15.1
 	google.golang.org/protobuf v1.36.2
 	gopkg.in/yaml.v2 v2.4.0
