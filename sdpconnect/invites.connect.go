@@ -47,15 +47,6 @@ const (
 	InviteServiceResendInviteProcedure = "/invites.InviteService/ResendInvite"
 )
 
-// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
-var (
-	inviteServiceServiceDescriptor            = sdp_go.File_invites_proto.Services().ByName("InviteService")
-	inviteServiceCreateInviteMethodDescriptor = inviteServiceServiceDescriptor.Methods().ByName("CreateInvite")
-	inviteServiceListInvitesMethodDescriptor  = inviteServiceServiceDescriptor.Methods().ByName("ListInvites")
-	inviteServiceRevokeInviteMethodDescriptor = inviteServiceServiceDescriptor.Methods().ByName("RevokeInvite")
-	inviteServiceResendInviteMethodDescriptor = inviteServiceServiceDescriptor.Methods().ByName("ResendInvite")
-)
-
 // InviteServiceClient is a client for the invites.InviteService service.
 type InviteServiceClient interface {
 	CreateInvite(context.Context, *connect.Request[sdp_go.CreateInviteRequest]) (*connect.Response[sdp_go.CreateInviteResponse], error)
@@ -73,29 +64,30 @@ type InviteServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewInviteServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) InviteServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
+	inviteServiceMethods := sdp_go.File_invites_proto.Services().ByName("InviteService").Methods()
 	return &inviteServiceClient{
 		createInvite: connect.NewClient[sdp_go.CreateInviteRequest, sdp_go.CreateInviteResponse](
 			httpClient,
 			baseURL+InviteServiceCreateInviteProcedure,
-			connect.WithSchema(inviteServiceCreateInviteMethodDescriptor),
+			connect.WithSchema(inviteServiceMethods.ByName("CreateInvite")),
 			connect.WithClientOptions(opts...),
 		),
 		listInvites: connect.NewClient[sdp_go.ListInvitesRequest, sdp_go.ListInvitesResponse](
 			httpClient,
 			baseURL+InviteServiceListInvitesProcedure,
-			connect.WithSchema(inviteServiceListInvitesMethodDescriptor),
+			connect.WithSchema(inviteServiceMethods.ByName("ListInvites")),
 			connect.WithClientOptions(opts...),
 		),
 		revokeInvite: connect.NewClient[sdp_go.RevokeInviteRequest, sdp_go.RevokeInviteResponse](
 			httpClient,
 			baseURL+InviteServiceRevokeInviteProcedure,
-			connect.WithSchema(inviteServiceRevokeInviteMethodDescriptor),
+			connect.WithSchema(inviteServiceMethods.ByName("RevokeInvite")),
 			connect.WithClientOptions(opts...),
 		),
 		resendInvite: connect.NewClient[sdp_go.ResendInviteRequest, sdp_go.ResendInviteResponse](
 			httpClient,
 			baseURL+InviteServiceResendInviteProcedure,
-			connect.WithSchema(inviteServiceResendInviteMethodDescriptor),
+			connect.WithSchema(inviteServiceMethods.ByName("ResendInvite")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -143,28 +135,29 @@ type InviteServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewInviteServiceHandler(svc InviteServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	inviteServiceMethods := sdp_go.File_invites_proto.Services().ByName("InviteService").Methods()
 	inviteServiceCreateInviteHandler := connect.NewUnaryHandler(
 		InviteServiceCreateInviteProcedure,
 		svc.CreateInvite,
-		connect.WithSchema(inviteServiceCreateInviteMethodDescriptor),
+		connect.WithSchema(inviteServiceMethods.ByName("CreateInvite")),
 		connect.WithHandlerOptions(opts...),
 	)
 	inviteServiceListInvitesHandler := connect.NewUnaryHandler(
 		InviteServiceListInvitesProcedure,
 		svc.ListInvites,
-		connect.WithSchema(inviteServiceListInvitesMethodDescriptor),
+		connect.WithSchema(inviteServiceMethods.ByName("ListInvites")),
 		connect.WithHandlerOptions(opts...),
 	)
 	inviteServiceRevokeInviteHandler := connect.NewUnaryHandler(
 		InviteServiceRevokeInviteProcedure,
 		svc.RevokeInvite,
-		connect.WithSchema(inviteServiceRevokeInviteMethodDescriptor),
+		connect.WithSchema(inviteServiceMethods.ByName("RevokeInvite")),
 		connect.WithHandlerOptions(opts...),
 	)
 	inviteServiceResendInviteHandler := connect.NewUnaryHandler(
 		InviteServiceResendInviteProcedure,
 		svc.ResendInvite,
-		connect.WithSchema(inviteServiceResendInviteMethodDescriptor),
+		connect.WithSchema(inviteServiceMethods.ByName("ResendInvite")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/invites.InviteService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

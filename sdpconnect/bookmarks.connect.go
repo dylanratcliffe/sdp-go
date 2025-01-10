@@ -53,17 +53,6 @@ const (
 	BookmarksServiceGetAffectedBookmarksProcedure = "/bookmarks.BookmarksService/GetAffectedBookmarks"
 )
 
-// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
-var (
-	bookmarksServiceServiceDescriptor                    = sdp_go.File_bookmarks_proto.Services().ByName("BookmarksService")
-	bookmarksServiceListBookmarksMethodDescriptor        = bookmarksServiceServiceDescriptor.Methods().ByName("ListBookmarks")
-	bookmarksServiceCreateBookmarkMethodDescriptor       = bookmarksServiceServiceDescriptor.Methods().ByName("CreateBookmark")
-	bookmarksServiceGetBookmarkMethodDescriptor          = bookmarksServiceServiceDescriptor.Methods().ByName("GetBookmark")
-	bookmarksServiceUpdateBookmarkMethodDescriptor       = bookmarksServiceServiceDescriptor.Methods().ByName("UpdateBookmark")
-	bookmarksServiceDeleteBookmarkMethodDescriptor       = bookmarksServiceServiceDescriptor.Methods().ByName("DeleteBookmark")
-	bookmarksServiceGetAffectedBookmarksMethodDescriptor = bookmarksServiceServiceDescriptor.Methods().ByName("GetAffectedBookmarks")
-)
-
 // BookmarksServiceClient is a client for the bookmarks.BookmarksService service.
 type BookmarksServiceClient interface {
 	// ListBookmarks returns all bookmarks of the current user. note that this does not include the actual bookmark data, use GetBookmark for that
@@ -87,41 +76,42 @@ type BookmarksServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewBookmarksServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) BookmarksServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
+	bookmarksServiceMethods := sdp_go.File_bookmarks_proto.Services().ByName("BookmarksService").Methods()
 	return &bookmarksServiceClient{
 		listBookmarks: connect.NewClient[sdp_go.ListBookmarksRequest, sdp_go.ListBookmarkResponse](
 			httpClient,
 			baseURL+BookmarksServiceListBookmarksProcedure,
-			connect.WithSchema(bookmarksServiceListBookmarksMethodDescriptor),
+			connect.WithSchema(bookmarksServiceMethods.ByName("ListBookmarks")),
 			connect.WithClientOptions(opts...),
 		),
 		createBookmark: connect.NewClient[sdp_go.CreateBookmarkRequest, sdp_go.CreateBookmarkResponse](
 			httpClient,
 			baseURL+BookmarksServiceCreateBookmarkProcedure,
-			connect.WithSchema(bookmarksServiceCreateBookmarkMethodDescriptor),
+			connect.WithSchema(bookmarksServiceMethods.ByName("CreateBookmark")),
 			connect.WithClientOptions(opts...),
 		),
 		getBookmark: connect.NewClient[sdp_go.GetBookmarkRequest, sdp_go.GetBookmarkResponse](
 			httpClient,
 			baseURL+BookmarksServiceGetBookmarkProcedure,
-			connect.WithSchema(bookmarksServiceGetBookmarkMethodDescriptor),
+			connect.WithSchema(bookmarksServiceMethods.ByName("GetBookmark")),
 			connect.WithClientOptions(opts...),
 		),
 		updateBookmark: connect.NewClient[sdp_go.UpdateBookmarkRequest, sdp_go.UpdateBookmarkResponse](
 			httpClient,
 			baseURL+BookmarksServiceUpdateBookmarkProcedure,
-			connect.WithSchema(bookmarksServiceUpdateBookmarkMethodDescriptor),
+			connect.WithSchema(bookmarksServiceMethods.ByName("UpdateBookmark")),
 			connect.WithClientOptions(opts...),
 		),
 		deleteBookmark: connect.NewClient[sdp_go.DeleteBookmarkRequest, sdp_go.DeleteBookmarkResponse](
 			httpClient,
 			baseURL+BookmarksServiceDeleteBookmarkProcedure,
-			connect.WithSchema(bookmarksServiceDeleteBookmarkMethodDescriptor),
+			connect.WithSchema(bookmarksServiceMethods.ByName("DeleteBookmark")),
 			connect.WithClientOptions(opts...),
 		),
 		getAffectedBookmarks: connect.NewClient[sdp_go.GetAffectedBookmarksRequest, sdp_go.GetAffectedBookmarksResponse](
 			httpClient,
 			baseURL+BookmarksServiceGetAffectedBookmarksProcedure,
-			connect.WithSchema(bookmarksServiceGetAffectedBookmarksMethodDescriptor),
+			connect.WithSchema(bookmarksServiceMethods.ByName("GetAffectedBookmarks")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -187,40 +177,41 @@ type BookmarksServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewBookmarksServiceHandler(svc BookmarksServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	bookmarksServiceMethods := sdp_go.File_bookmarks_proto.Services().ByName("BookmarksService").Methods()
 	bookmarksServiceListBookmarksHandler := connect.NewUnaryHandler(
 		BookmarksServiceListBookmarksProcedure,
 		svc.ListBookmarks,
-		connect.WithSchema(bookmarksServiceListBookmarksMethodDescriptor),
+		connect.WithSchema(bookmarksServiceMethods.ByName("ListBookmarks")),
 		connect.WithHandlerOptions(opts...),
 	)
 	bookmarksServiceCreateBookmarkHandler := connect.NewUnaryHandler(
 		BookmarksServiceCreateBookmarkProcedure,
 		svc.CreateBookmark,
-		connect.WithSchema(bookmarksServiceCreateBookmarkMethodDescriptor),
+		connect.WithSchema(bookmarksServiceMethods.ByName("CreateBookmark")),
 		connect.WithHandlerOptions(opts...),
 	)
 	bookmarksServiceGetBookmarkHandler := connect.NewUnaryHandler(
 		BookmarksServiceGetBookmarkProcedure,
 		svc.GetBookmark,
-		connect.WithSchema(bookmarksServiceGetBookmarkMethodDescriptor),
+		connect.WithSchema(bookmarksServiceMethods.ByName("GetBookmark")),
 		connect.WithHandlerOptions(opts...),
 	)
 	bookmarksServiceUpdateBookmarkHandler := connect.NewUnaryHandler(
 		BookmarksServiceUpdateBookmarkProcedure,
 		svc.UpdateBookmark,
-		connect.WithSchema(bookmarksServiceUpdateBookmarkMethodDescriptor),
+		connect.WithSchema(bookmarksServiceMethods.ByName("UpdateBookmark")),
 		connect.WithHandlerOptions(opts...),
 	)
 	bookmarksServiceDeleteBookmarkHandler := connect.NewUnaryHandler(
 		BookmarksServiceDeleteBookmarkProcedure,
 		svc.DeleteBookmark,
-		connect.WithSchema(bookmarksServiceDeleteBookmarkMethodDescriptor),
+		connect.WithSchema(bookmarksServiceMethods.ByName("DeleteBookmark")),
 		connect.WithHandlerOptions(opts...),
 	)
 	bookmarksServiceGetAffectedBookmarksHandler := connect.NewUnaryHandler(
 		BookmarksServiceGetAffectedBookmarksProcedure,
 		svc.GetAffectedBookmarks,
-		connect.WithSchema(bookmarksServiceGetAffectedBookmarksMethodDescriptor),
+		connect.WithSchema(bookmarksServiceMethods.ByName("GetAffectedBookmarks")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/bookmarks.BookmarksService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

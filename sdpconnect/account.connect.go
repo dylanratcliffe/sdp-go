@@ -116,39 +116,6 @@ const (
 	ManagementServiceListAvailableItemTypesProcedure = "/account.ManagementService/ListAvailableItemTypes"
 )
 
-// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
-var (
-	adminServiceServiceDescriptor                            = sdp_go.File_account_proto.Services().ByName("AdminService")
-	adminServiceListAccountsMethodDescriptor                 = adminServiceServiceDescriptor.Methods().ByName("ListAccounts")
-	adminServiceCreateAccountMethodDescriptor                = adminServiceServiceDescriptor.Methods().ByName("CreateAccount")
-	adminServiceUpdateAccountMethodDescriptor                = adminServiceServiceDescriptor.Methods().ByName("UpdateAccount")
-	adminServiceGetAccountMethodDescriptor                   = adminServiceServiceDescriptor.Methods().ByName("GetAccount")
-	adminServiceDeleteAccountMethodDescriptor                = adminServiceServiceDescriptor.Methods().ByName("DeleteAccount")
-	adminServiceListSourcesMethodDescriptor                  = adminServiceServiceDescriptor.Methods().ByName("ListSources")
-	adminServiceCreateSourceMethodDescriptor                 = adminServiceServiceDescriptor.Methods().ByName("CreateSource")
-	adminServiceGetSourceMethodDescriptor                    = adminServiceServiceDescriptor.Methods().ByName("GetSource")
-	adminServiceUpdateSourceMethodDescriptor                 = adminServiceServiceDescriptor.Methods().ByName("UpdateSource")
-	adminServiceDeleteSourceMethodDescriptor                 = adminServiceServiceDescriptor.Methods().ByName("DeleteSource")
-	adminServiceKeepaliveSourcesMethodDescriptor             = adminServiceServiceDescriptor.Methods().ByName("KeepaliveSources")
-	adminServiceCreateTokenMethodDescriptor                  = adminServiceServiceDescriptor.Methods().ByName("CreateToken")
-	managementServiceServiceDescriptor                       = sdp_go.File_account_proto.Services().ByName("ManagementService")
-	managementServiceGetAccountMethodDescriptor              = managementServiceServiceDescriptor.Methods().ByName("GetAccount")
-	managementServiceDeleteAccountMethodDescriptor           = managementServiceServiceDescriptor.Methods().ByName("DeleteAccount")
-	managementServiceListSourcesMethodDescriptor             = managementServiceServiceDescriptor.Methods().ByName("ListSources")
-	managementServiceCreateSourceMethodDescriptor            = managementServiceServiceDescriptor.Methods().ByName("CreateSource")
-	managementServiceGetSourceMethodDescriptor               = managementServiceServiceDescriptor.Methods().ByName("GetSource")
-	managementServiceUpdateSourceMethodDescriptor            = managementServiceServiceDescriptor.Methods().ByName("UpdateSource")
-	managementServiceDeleteSourceMethodDescriptor            = managementServiceServiceDescriptor.Methods().ByName("DeleteSource")
-	managementServiceListAllSourcesStatusMethodDescriptor    = managementServiceServiceDescriptor.Methods().ByName("ListAllSourcesStatus")
-	managementServiceListActiveSourcesStatusMethodDescriptor = managementServiceServiceDescriptor.Methods().ByName("ListActiveSourcesStatus")
-	managementServiceSubmitSourceHeartbeatMethodDescriptor   = managementServiceServiceDescriptor.Methods().ByName("SubmitSourceHeartbeat")
-	managementServiceKeepaliveSourcesMethodDescriptor        = managementServiceServiceDescriptor.Methods().ByName("KeepaliveSources")
-	managementServiceCreateTokenMethodDescriptor             = managementServiceServiceDescriptor.Methods().ByName("CreateToken")
-	managementServiceRevlinkWarmupMethodDescriptor           = managementServiceServiceDescriptor.Methods().ByName("RevlinkWarmup")
-	managementServiceGetTrialEndMethodDescriptor             = managementServiceServiceDescriptor.Methods().ByName("GetTrialEnd")
-	managementServiceListAvailableItemTypesMethodDescriptor  = managementServiceServiceDescriptor.Methods().ByName("ListAvailableItemTypes")
-)
-
 // AdminServiceClient is a client for the account.AdminService service.
 type AdminServiceClient interface {
 	// Lists the details of all NATS Accounts
@@ -191,77 +158,78 @@ type AdminServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewAdminServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) AdminServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
+	adminServiceMethods := sdp_go.File_account_proto.Services().ByName("AdminService").Methods()
 	return &adminServiceClient{
 		listAccounts: connect.NewClient[sdp_go.ListAccountsRequest, sdp_go.ListAccountsResponse](
 			httpClient,
 			baseURL+AdminServiceListAccountsProcedure,
-			connect.WithSchema(adminServiceListAccountsMethodDescriptor),
+			connect.WithSchema(adminServiceMethods.ByName("ListAccounts")),
 			connect.WithClientOptions(opts...),
 		),
 		createAccount: connect.NewClient[sdp_go.CreateAccountRequest, sdp_go.CreateAccountResponse](
 			httpClient,
 			baseURL+AdminServiceCreateAccountProcedure,
-			connect.WithSchema(adminServiceCreateAccountMethodDescriptor),
+			connect.WithSchema(adminServiceMethods.ByName("CreateAccount")),
 			connect.WithClientOptions(opts...),
 		),
 		updateAccount: connect.NewClient[sdp_go.AdminUpdateAccountRequest, sdp_go.UpdateAccountResponse](
 			httpClient,
 			baseURL+AdminServiceUpdateAccountProcedure,
-			connect.WithSchema(adminServiceUpdateAccountMethodDescriptor),
+			connect.WithSchema(adminServiceMethods.ByName("UpdateAccount")),
 			connect.WithClientOptions(opts...),
 		),
 		getAccount: connect.NewClient[sdp_go.AdminGetAccountRequest, sdp_go.GetAccountResponse](
 			httpClient,
 			baseURL+AdminServiceGetAccountProcedure,
-			connect.WithSchema(adminServiceGetAccountMethodDescriptor),
+			connect.WithSchema(adminServiceMethods.ByName("GetAccount")),
 			connect.WithClientOptions(opts...),
 		),
 		deleteAccount: connect.NewClient[sdp_go.AdminDeleteAccountRequest, sdp_go.AdminDeleteAccountResponse](
 			httpClient,
 			baseURL+AdminServiceDeleteAccountProcedure,
-			connect.WithSchema(adminServiceDeleteAccountMethodDescriptor),
+			connect.WithSchema(adminServiceMethods.ByName("DeleteAccount")),
 			connect.WithClientOptions(opts...),
 		),
 		listSources: connect.NewClient[sdp_go.AdminListSourcesRequest, sdp_go.ListSourcesResponse](
 			httpClient,
 			baseURL+AdminServiceListSourcesProcedure,
-			connect.WithSchema(adminServiceListSourcesMethodDescriptor),
+			connect.WithSchema(adminServiceMethods.ByName("ListSources")),
 			connect.WithClientOptions(opts...),
 		),
 		createSource: connect.NewClient[sdp_go.AdminCreateSourceRequest, sdp_go.CreateSourceResponse](
 			httpClient,
 			baseURL+AdminServiceCreateSourceProcedure,
-			connect.WithSchema(adminServiceCreateSourceMethodDescriptor),
+			connect.WithSchema(adminServiceMethods.ByName("CreateSource")),
 			connect.WithClientOptions(opts...),
 		),
 		getSource: connect.NewClient[sdp_go.AdminGetSourceRequest, sdp_go.GetSourceResponse](
 			httpClient,
 			baseURL+AdminServiceGetSourceProcedure,
-			connect.WithSchema(adminServiceGetSourceMethodDescriptor),
+			connect.WithSchema(adminServiceMethods.ByName("GetSource")),
 			connect.WithClientOptions(opts...),
 		),
 		updateSource: connect.NewClient[sdp_go.AdminUpdateSourceRequest, sdp_go.UpdateSourceResponse](
 			httpClient,
 			baseURL+AdminServiceUpdateSourceProcedure,
-			connect.WithSchema(adminServiceUpdateSourceMethodDescriptor),
+			connect.WithSchema(adminServiceMethods.ByName("UpdateSource")),
 			connect.WithClientOptions(opts...),
 		),
 		deleteSource: connect.NewClient[sdp_go.AdminDeleteSourceRequest, sdp_go.DeleteSourceResponse](
 			httpClient,
 			baseURL+AdminServiceDeleteSourceProcedure,
-			connect.WithSchema(adminServiceDeleteSourceMethodDescriptor),
+			connect.WithSchema(adminServiceMethods.ByName("DeleteSource")),
 			connect.WithClientOptions(opts...),
 		),
 		keepaliveSources: connect.NewClient[sdp_go.AdminKeepaliveSourcesRequest, sdp_go.KeepaliveSourcesResponse](
 			httpClient,
 			baseURL+AdminServiceKeepaliveSourcesProcedure,
-			connect.WithSchema(adminServiceKeepaliveSourcesMethodDescriptor),
+			connect.WithSchema(adminServiceMethods.ByName("KeepaliveSources")),
 			connect.WithClientOptions(opts...),
 		),
 		createToken: connect.NewClient[sdp_go.AdminCreateTokenRequest, sdp_go.CreateTokenResponse](
 			httpClient,
 			baseURL+AdminServiceCreateTokenProcedure,
-			connect.WithSchema(adminServiceCreateTokenMethodDescriptor),
+			connect.WithSchema(adminServiceMethods.ByName("CreateToken")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -382,76 +350,77 @@ type AdminServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewAdminServiceHandler(svc AdminServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	adminServiceMethods := sdp_go.File_account_proto.Services().ByName("AdminService").Methods()
 	adminServiceListAccountsHandler := connect.NewUnaryHandler(
 		AdminServiceListAccountsProcedure,
 		svc.ListAccounts,
-		connect.WithSchema(adminServiceListAccountsMethodDescriptor),
+		connect.WithSchema(adminServiceMethods.ByName("ListAccounts")),
 		connect.WithHandlerOptions(opts...),
 	)
 	adminServiceCreateAccountHandler := connect.NewUnaryHandler(
 		AdminServiceCreateAccountProcedure,
 		svc.CreateAccount,
-		connect.WithSchema(adminServiceCreateAccountMethodDescriptor),
+		connect.WithSchema(adminServiceMethods.ByName("CreateAccount")),
 		connect.WithHandlerOptions(opts...),
 	)
 	adminServiceUpdateAccountHandler := connect.NewUnaryHandler(
 		AdminServiceUpdateAccountProcedure,
 		svc.UpdateAccount,
-		connect.WithSchema(adminServiceUpdateAccountMethodDescriptor),
+		connect.WithSchema(adminServiceMethods.ByName("UpdateAccount")),
 		connect.WithHandlerOptions(opts...),
 	)
 	adminServiceGetAccountHandler := connect.NewUnaryHandler(
 		AdminServiceGetAccountProcedure,
 		svc.GetAccount,
-		connect.WithSchema(adminServiceGetAccountMethodDescriptor),
+		connect.WithSchema(adminServiceMethods.ByName("GetAccount")),
 		connect.WithHandlerOptions(opts...),
 	)
 	adminServiceDeleteAccountHandler := connect.NewUnaryHandler(
 		AdminServiceDeleteAccountProcedure,
 		svc.DeleteAccount,
-		connect.WithSchema(adminServiceDeleteAccountMethodDescriptor),
+		connect.WithSchema(adminServiceMethods.ByName("DeleteAccount")),
 		connect.WithHandlerOptions(opts...),
 	)
 	adminServiceListSourcesHandler := connect.NewUnaryHandler(
 		AdminServiceListSourcesProcedure,
 		svc.ListSources,
-		connect.WithSchema(adminServiceListSourcesMethodDescriptor),
+		connect.WithSchema(adminServiceMethods.ByName("ListSources")),
 		connect.WithHandlerOptions(opts...),
 	)
 	adminServiceCreateSourceHandler := connect.NewUnaryHandler(
 		AdminServiceCreateSourceProcedure,
 		svc.CreateSource,
-		connect.WithSchema(adminServiceCreateSourceMethodDescriptor),
+		connect.WithSchema(adminServiceMethods.ByName("CreateSource")),
 		connect.WithHandlerOptions(opts...),
 	)
 	adminServiceGetSourceHandler := connect.NewUnaryHandler(
 		AdminServiceGetSourceProcedure,
 		svc.GetSource,
-		connect.WithSchema(adminServiceGetSourceMethodDescriptor),
+		connect.WithSchema(adminServiceMethods.ByName("GetSource")),
 		connect.WithHandlerOptions(opts...),
 	)
 	adminServiceUpdateSourceHandler := connect.NewUnaryHandler(
 		AdminServiceUpdateSourceProcedure,
 		svc.UpdateSource,
-		connect.WithSchema(adminServiceUpdateSourceMethodDescriptor),
+		connect.WithSchema(adminServiceMethods.ByName("UpdateSource")),
 		connect.WithHandlerOptions(opts...),
 	)
 	adminServiceDeleteSourceHandler := connect.NewUnaryHandler(
 		AdminServiceDeleteSourceProcedure,
 		svc.DeleteSource,
-		connect.WithSchema(adminServiceDeleteSourceMethodDescriptor),
+		connect.WithSchema(adminServiceMethods.ByName("DeleteSource")),
 		connect.WithHandlerOptions(opts...),
 	)
 	adminServiceKeepaliveSourcesHandler := connect.NewUnaryHandler(
 		AdminServiceKeepaliveSourcesProcedure,
 		svc.KeepaliveSources,
-		connect.WithSchema(adminServiceKeepaliveSourcesMethodDescriptor),
+		connect.WithSchema(adminServiceMethods.ByName("KeepaliveSources")),
 		connect.WithHandlerOptions(opts...),
 	)
 	adminServiceCreateTokenHandler := connect.NewUnaryHandler(
 		AdminServiceCreateTokenProcedure,
 		svc.CreateToken,
-		connect.WithSchema(adminServiceCreateTokenMethodDescriptor),
+		connect.WithSchema(adminServiceMethods.ByName("CreateToken")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/account.AdminService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -590,95 +559,96 @@ type ManagementServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewManagementServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) ManagementServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
+	managementServiceMethods := sdp_go.File_account_proto.Services().ByName("ManagementService").Methods()
 	return &managementServiceClient{
 		getAccount: connect.NewClient[sdp_go.GetAccountRequest, sdp_go.GetAccountResponse](
 			httpClient,
 			baseURL+ManagementServiceGetAccountProcedure,
-			connect.WithSchema(managementServiceGetAccountMethodDescriptor),
+			connect.WithSchema(managementServiceMethods.ByName("GetAccount")),
 			connect.WithClientOptions(opts...),
 		),
 		deleteAccount: connect.NewClient[sdp_go.DeleteAccountRequest, sdp_go.DeleteAccountResponse](
 			httpClient,
 			baseURL+ManagementServiceDeleteAccountProcedure,
-			connect.WithSchema(managementServiceDeleteAccountMethodDescriptor),
+			connect.WithSchema(managementServiceMethods.ByName("DeleteAccount")),
 			connect.WithClientOptions(opts...),
 		),
 		listSources: connect.NewClient[sdp_go.ListSourcesRequest, sdp_go.ListSourcesResponse](
 			httpClient,
 			baseURL+ManagementServiceListSourcesProcedure,
-			connect.WithSchema(managementServiceListSourcesMethodDescriptor),
+			connect.WithSchema(managementServiceMethods.ByName("ListSources")),
 			connect.WithClientOptions(opts...),
 		),
 		createSource: connect.NewClient[sdp_go.CreateSourceRequest, sdp_go.CreateSourceResponse](
 			httpClient,
 			baseURL+ManagementServiceCreateSourceProcedure,
-			connect.WithSchema(managementServiceCreateSourceMethodDescriptor),
+			connect.WithSchema(managementServiceMethods.ByName("CreateSource")),
 			connect.WithClientOptions(opts...),
 		),
 		getSource: connect.NewClient[sdp_go.GetSourceRequest, sdp_go.GetSourceResponse](
 			httpClient,
 			baseURL+ManagementServiceGetSourceProcedure,
-			connect.WithSchema(managementServiceGetSourceMethodDescriptor),
+			connect.WithSchema(managementServiceMethods.ByName("GetSource")),
 			connect.WithClientOptions(opts...),
 		),
 		updateSource: connect.NewClient[sdp_go.UpdateSourceRequest, sdp_go.UpdateSourceResponse](
 			httpClient,
 			baseURL+ManagementServiceUpdateSourceProcedure,
-			connect.WithSchema(managementServiceUpdateSourceMethodDescriptor),
+			connect.WithSchema(managementServiceMethods.ByName("UpdateSource")),
 			connect.WithClientOptions(opts...),
 		),
 		deleteSource: connect.NewClient[sdp_go.DeleteSourceRequest, sdp_go.DeleteSourceResponse](
 			httpClient,
 			baseURL+ManagementServiceDeleteSourceProcedure,
-			connect.WithSchema(managementServiceDeleteSourceMethodDescriptor),
+			connect.WithSchema(managementServiceMethods.ByName("DeleteSource")),
 			connect.WithClientOptions(opts...),
 		),
 		listAllSourcesStatus: connect.NewClient[sdp_go.ListAllSourcesStatusRequest, sdp_go.ListAllSourcesStatusResponse](
 			httpClient,
 			baseURL+ManagementServiceListAllSourcesStatusProcedure,
-			connect.WithSchema(managementServiceListAllSourcesStatusMethodDescriptor),
+			connect.WithSchema(managementServiceMethods.ByName("ListAllSourcesStatus")),
 			connect.WithClientOptions(opts...),
 		),
 		listActiveSourcesStatus: connect.NewClient[sdp_go.ListAllSourcesStatusRequest, sdp_go.ListAllSourcesStatusResponse](
 			httpClient,
 			baseURL+ManagementServiceListActiveSourcesStatusProcedure,
-			connect.WithSchema(managementServiceListActiveSourcesStatusMethodDescriptor),
+			connect.WithSchema(managementServiceMethods.ByName("ListActiveSourcesStatus")),
 			connect.WithClientOptions(opts...),
 		),
 		submitSourceHeartbeat: connect.NewClient[sdp_go.SubmitSourceHeartbeatRequest, sdp_go.SubmitSourceHeartbeatResponse](
 			httpClient,
 			baseURL+ManagementServiceSubmitSourceHeartbeatProcedure,
-			connect.WithSchema(managementServiceSubmitSourceHeartbeatMethodDescriptor),
+			connect.WithSchema(managementServiceMethods.ByName("SubmitSourceHeartbeat")),
 			connect.WithClientOptions(opts...),
 		),
 		keepaliveSources: connect.NewClient[sdp_go.KeepaliveSourcesRequest, sdp_go.KeepaliveSourcesResponse](
 			httpClient,
 			baseURL+ManagementServiceKeepaliveSourcesProcedure,
-			connect.WithSchema(managementServiceKeepaliveSourcesMethodDescriptor),
+			connect.WithSchema(managementServiceMethods.ByName("KeepaliveSources")),
 			connect.WithClientOptions(opts...),
 		),
 		createToken: connect.NewClient[sdp_go.CreateTokenRequest, sdp_go.CreateTokenResponse](
 			httpClient,
 			baseURL+ManagementServiceCreateTokenProcedure,
-			connect.WithSchema(managementServiceCreateTokenMethodDescriptor),
+			connect.WithSchema(managementServiceMethods.ByName("CreateToken")),
 			connect.WithClientOptions(opts...),
 		),
 		revlinkWarmup: connect.NewClient[sdp_go.RevlinkWarmupRequest, sdp_go.RevlinkWarmupResponse](
 			httpClient,
 			baseURL+ManagementServiceRevlinkWarmupProcedure,
-			connect.WithSchema(managementServiceRevlinkWarmupMethodDescriptor),
+			connect.WithSchema(managementServiceMethods.ByName("RevlinkWarmup")),
 			connect.WithClientOptions(opts...),
 		),
 		getTrialEnd: connect.NewClient[sdp_go.GetTrialEndRequest, sdp_go.GetTrialEndResponse](
 			httpClient,
 			baseURL+ManagementServiceGetTrialEndProcedure,
-			connect.WithSchema(managementServiceGetTrialEndMethodDescriptor),
+			connect.WithSchema(managementServiceMethods.ByName("GetTrialEnd")),
 			connect.WithClientOptions(opts...),
 		),
 		listAvailableItemTypes: connect.NewClient[sdp_go.ListAvailableItemTypesRequest, sdp_go.ListAvailableItemTypesResponse](
 			httpClient,
 			baseURL+ManagementServiceListAvailableItemTypesProcedure,
-			connect.WithSchema(managementServiceListAvailableItemTypesMethodDescriptor),
+			connect.WithSchema(managementServiceMethods.ByName("ListAvailableItemTypes")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -828,94 +798,95 @@ type ManagementServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewManagementServiceHandler(svc ManagementServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	managementServiceMethods := sdp_go.File_account_proto.Services().ByName("ManagementService").Methods()
 	managementServiceGetAccountHandler := connect.NewUnaryHandler(
 		ManagementServiceGetAccountProcedure,
 		svc.GetAccount,
-		connect.WithSchema(managementServiceGetAccountMethodDescriptor),
+		connect.WithSchema(managementServiceMethods.ByName("GetAccount")),
 		connect.WithHandlerOptions(opts...),
 	)
 	managementServiceDeleteAccountHandler := connect.NewUnaryHandler(
 		ManagementServiceDeleteAccountProcedure,
 		svc.DeleteAccount,
-		connect.WithSchema(managementServiceDeleteAccountMethodDescriptor),
+		connect.WithSchema(managementServiceMethods.ByName("DeleteAccount")),
 		connect.WithHandlerOptions(opts...),
 	)
 	managementServiceListSourcesHandler := connect.NewUnaryHandler(
 		ManagementServiceListSourcesProcedure,
 		svc.ListSources,
-		connect.WithSchema(managementServiceListSourcesMethodDescriptor),
+		connect.WithSchema(managementServiceMethods.ByName("ListSources")),
 		connect.WithHandlerOptions(opts...),
 	)
 	managementServiceCreateSourceHandler := connect.NewUnaryHandler(
 		ManagementServiceCreateSourceProcedure,
 		svc.CreateSource,
-		connect.WithSchema(managementServiceCreateSourceMethodDescriptor),
+		connect.WithSchema(managementServiceMethods.ByName("CreateSource")),
 		connect.WithHandlerOptions(opts...),
 	)
 	managementServiceGetSourceHandler := connect.NewUnaryHandler(
 		ManagementServiceGetSourceProcedure,
 		svc.GetSource,
-		connect.WithSchema(managementServiceGetSourceMethodDescriptor),
+		connect.WithSchema(managementServiceMethods.ByName("GetSource")),
 		connect.WithHandlerOptions(opts...),
 	)
 	managementServiceUpdateSourceHandler := connect.NewUnaryHandler(
 		ManagementServiceUpdateSourceProcedure,
 		svc.UpdateSource,
-		connect.WithSchema(managementServiceUpdateSourceMethodDescriptor),
+		connect.WithSchema(managementServiceMethods.ByName("UpdateSource")),
 		connect.WithHandlerOptions(opts...),
 	)
 	managementServiceDeleteSourceHandler := connect.NewUnaryHandler(
 		ManagementServiceDeleteSourceProcedure,
 		svc.DeleteSource,
-		connect.WithSchema(managementServiceDeleteSourceMethodDescriptor),
+		connect.WithSchema(managementServiceMethods.ByName("DeleteSource")),
 		connect.WithHandlerOptions(opts...),
 	)
 	managementServiceListAllSourcesStatusHandler := connect.NewUnaryHandler(
 		ManagementServiceListAllSourcesStatusProcedure,
 		svc.ListAllSourcesStatus,
-		connect.WithSchema(managementServiceListAllSourcesStatusMethodDescriptor),
+		connect.WithSchema(managementServiceMethods.ByName("ListAllSourcesStatus")),
 		connect.WithHandlerOptions(opts...),
 	)
 	managementServiceListActiveSourcesStatusHandler := connect.NewUnaryHandler(
 		ManagementServiceListActiveSourcesStatusProcedure,
 		svc.ListActiveSourcesStatus,
-		connect.WithSchema(managementServiceListActiveSourcesStatusMethodDescriptor),
+		connect.WithSchema(managementServiceMethods.ByName("ListActiveSourcesStatus")),
 		connect.WithHandlerOptions(opts...),
 	)
 	managementServiceSubmitSourceHeartbeatHandler := connect.NewUnaryHandler(
 		ManagementServiceSubmitSourceHeartbeatProcedure,
 		svc.SubmitSourceHeartbeat,
-		connect.WithSchema(managementServiceSubmitSourceHeartbeatMethodDescriptor),
+		connect.WithSchema(managementServiceMethods.ByName("SubmitSourceHeartbeat")),
 		connect.WithHandlerOptions(opts...),
 	)
 	managementServiceKeepaliveSourcesHandler := connect.NewUnaryHandler(
 		ManagementServiceKeepaliveSourcesProcedure,
 		svc.KeepaliveSources,
-		connect.WithSchema(managementServiceKeepaliveSourcesMethodDescriptor),
+		connect.WithSchema(managementServiceMethods.ByName("KeepaliveSources")),
 		connect.WithHandlerOptions(opts...),
 	)
 	managementServiceCreateTokenHandler := connect.NewUnaryHandler(
 		ManagementServiceCreateTokenProcedure,
 		svc.CreateToken,
-		connect.WithSchema(managementServiceCreateTokenMethodDescriptor),
+		connect.WithSchema(managementServiceMethods.ByName("CreateToken")),
 		connect.WithHandlerOptions(opts...),
 	)
 	managementServiceRevlinkWarmupHandler := connect.NewServerStreamHandler(
 		ManagementServiceRevlinkWarmupProcedure,
 		svc.RevlinkWarmup,
-		connect.WithSchema(managementServiceRevlinkWarmupMethodDescriptor),
+		connect.WithSchema(managementServiceMethods.ByName("RevlinkWarmup")),
 		connect.WithHandlerOptions(opts...),
 	)
 	managementServiceGetTrialEndHandler := connect.NewUnaryHandler(
 		ManagementServiceGetTrialEndProcedure,
 		svc.GetTrialEnd,
-		connect.WithSchema(managementServiceGetTrialEndMethodDescriptor),
+		connect.WithSchema(managementServiceMethods.ByName("GetTrialEnd")),
 		connect.WithHandlerOptions(opts...),
 	)
 	managementServiceListAvailableItemTypesHandler := connect.NewUnaryHandler(
 		ManagementServiceListAvailableItemTypesProcedure,
 		svc.ListAvailableItemTypes,
-		connect.WithSchema(managementServiceListAvailableItemTypesMethodDescriptor),
+		connect.WithSchema(managementServiceMethods.ByName("ListAvailableItemTypes")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/account.ManagementService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

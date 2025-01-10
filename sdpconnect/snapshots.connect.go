@@ -53,17 +53,6 @@ const (
 	SnapshotsServiceListSnapshotByGUNProcedure = "/snapshots.SnapshotsService/ListSnapshotByGUN"
 )
 
-// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
-var (
-	snapshotsServiceServiceDescriptor                 = sdp_go.File_snapshots_proto.Services().ByName("SnapshotsService")
-	snapshotsServiceListSnapshotsMethodDescriptor     = snapshotsServiceServiceDescriptor.Methods().ByName("ListSnapshots")
-	snapshotsServiceCreateSnapshotMethodDescriptor    = snapshotsServiceServiceDescriptor.Methods().ByName("CreateSnapshot")
-	snapshotsServiceGetSnapshotMethodDescriptor       = snapshotsServiceServiceDescriptor.Methods().ByName("GetSnapshot")
-	snapshotsServiceUpdateSnapshotMethodDescriptor    = snapshotsServiceServiceDescriptor.Methods().ByName("UpdateSnapshot")
-	snapshotsServiceDeleteSnapshotMethodDescriptor    = snapshotsServiceServiceDescriptor.Methods().ByName("DeleteSnapshot")
-	snapshotsServiceListSnapshotByGUNMethodDescriptor = snapshotsServiceServiceDescriptor.Methods().ByName("ListSnapshotByGUN")
-)
-
 // SnapshotsServiceClient is a client for the snapshots.SnapshotsService service.
 type SnapshotsServiceClient interface {
 	ListSnapshots(context.Context, *connect.Request[sdp_go.ListSnapshotsRequest]) (*connect.Response[sdp_go.ListSnapshotResponse], error)
@@ -83,41 +72,42 @@ type SnapshotsServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewSnapshotsServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) SnapshotsServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
+	snapshotsServiceMethods := sdp_go.File_snapshots_proto.Services().ByName("SnapshotsService").Methods()
 	return &snapshotsServiceClient{
 		listSnapshots: connect.NewClient[sdp_go.ListSnapshotsRequest, sdp_go.ListSnapshotResponse](
 			httpClient,
 			baseURL+SnapshotsServiceListSnapshotsProcedure,
-			connect.WithSchema(snapshotsServiceListSnapshotsMethodDescriptor),
+			connect.WithSchema(snapshotsServiceMethods.ByName("ListSnapshots")),
 			connect.WithClientOptions(opts...),
 		),
 		createSnapshot: connect.NewClient[sdp_go.CreateSnapshotRequest, sdp_go.CreateSnapshotResponse](
 			httpClient,
 			baseURL+SnapshotsServiceCreateSnapshotProcedure,
-			connect.WithSchema(snapshotsServiceCreateSnapshotMethodDescriptor),
+			connect.WithSchema(snapshotsServiceMethods.ByName("CreateSnapshot")),
 			connect.WithClientOptions(opts...),
 		),
 		getSnapshot: connect.NewClient[sdp_go.GetSnapshotRequest, sdp_go.GetSnapshotResponse](
 			httpClient,
 			baseURL+SnapshotsServiceGetSnapshotProcedure,
-			connect.WithSchema(snapshotsServiceGetSnapshotMethodDescriptor),
+			connect.WithSchema(snapshotsServiceMethods.ByName("GetSnapshot")),
 			connect.WithClientOptions(opts...),
 		),
 		updateSnapshot: connect.NewClient[sdp_go.UpdateSnapshotRequest, sdp_go.UpdateSnapshotResponse](
 			httpClient,
 			baseURL+SnapshotsServiceUpdateSnapshotProcedure,
-			connect.WithSchema(snapshotsServiceUpdateSnapshotMethodDescriptor),
+			connect.WithSchema(snapshotsServiceMethods.ByName("UpdateSnapshot")),
 			connect.WithClientOptions(opts...),
 		),
 		deleteSnapshot: connect.NewClient[sdp_go.DeleteSnapshotRequest, sdp_go.DeleteSnapshotResponse](
 			httpClient,
 			baseURL+SnapshotsServiceDeleteSnapshotProcedure,
-			connect.WithSchema(snapshotsServiceDeleteSnapshotMethodDescriptor),
+			connect.WithSchema(snapshotsServiceMethods.ByName("DeleteSnapshot")),
 			connect.WithClientOptions(opts...),
 		),
 		listSnapshotByGUN: connect.NewClient[sdp_go.ListSnapshotsByGUNRequest, sdp_go.ListSnapshotsByGUNResponse](
 			httpClient,
 			baseURL+SnapshotsServiceListSnapshotByGUNProcedure,
-			connect.WithSchema(snapshotsServiceListSnapshotByGUNMethodDescriptor),
+			connect.WithSchema(snapshotsServiceMethods.ByName("ListSnapshotByGUN")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -179,40 +169,41 @@ type SnapshotsServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewSnapshotsServiceHandler(svc SnapshotsServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	snapshotsServiceMethods := sdp_go.File_snapshots_proto.Services().ByName("SnapshotsService").Methods()
 	snapshotsServiceListSnapshotsHandler := connect.NewUnaryHandler(
 		SnapshotsServiceListSnapshotsProcedure,
 		svc.ListSnapshots,
-		connect.WithSchema(snapshotsServiceListSnapshotsMethodDescriptor),
+		connect.WithSchema(snapshotsServiceMethods.ByName("ListSnapshots")),
 		connect.WithHandlerOptions(opts...),
 	)
 	snapshotsServiceCreateSnapshotHandler := connect.NewUnaryHandler(
 		SnapshotsServiceCreateSnapshotProcedure,
 		svc.CreateSnapshot,
-		connect.WithSchema(snapshotsServiceCreateSnapshotMethodDescriptor),
+		connect.WithSchema(snapshotsServiceMethods.ByName("CreateSnapshot")),
 		connect.WithHandlerOptions(opts...),
 	)
 	snapshotsServiceGetSnapshotHandler := connect.NewUnaryHandler(
 		SnapshotsServiceGetSnapshotProcedure,
 		svc.GetSnapshot,
-		connect.WithSchema(snapshotsServiceGetSnapshotMethodDescriptor),
+		connect.WithSchema(snapshotsServiceMethods.ByName("GetSnapshot")),
 		connect.WithHandlerOptions(opts...),
 	)
 	snapshotsServiceUpdateSnapshotHandler := connect.NewUnaryHandler(
 		SnapshotsServiceUpdateSnapshotProcedure,
 		svc.UpdateSnapshot,
-		connect.WithSchema(snapshotsServiceUpdateSnapshotMethodDescriptor),
+		connect.WithSchema(snapshotsServiceMethods.ByName("UpdateSnapshot")),
 		connect.WithHandlerOptions(opts...),
 	)
 	snapshotsServiceDeleteSnapshotHandler := connect.NewUnaryHandler(
 		SnapshotsServiceDeleteSnapshotProcedure,
 		svc.DeleteSnapshot,
-		connect.WithSchema(snapshotsServiceDeleteSnapshotMethodDescriptor),
+		connect.WithSchema(snapshotsServiceMethods.ByName("DeleteSnapshot")),
 		connect.WithHandlerOptions(opts...),
 	)
 	snapshotsServiceListSnapshotByGUNHandler := connect.NewUnaryHandler(
 		SnapshotsServiceListSnapshotByGUNProcedure,
 		svc.ListSnapshotByGUN,
-		connect.WithSchema(snapshotsServiceListSnapshotByGUNMethodDescriptor),
+		connect.WithSchema(snapshotsServiceMethods.ByName("ListSnapshotByGUN")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/snapshots.SnapshotsService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

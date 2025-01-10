@@ -40,13 +40,6 @@ const (
 	Auth0SupportKeepaliveSourcesProcedure = "/auth0support.Auth0Support/KeepaliveSources"
 )
 
-// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
-var (
-	auth0SupportServiceDescriptor                = sdp_go.File_auth0support_proto.Services().ByName("Auth0Support")
-	auth0SupportCreateUserMethodDescriptor       = auth0SupportServiceDescriptor.Methods().ByName("CreateUser")
-	auth0SupportKeepaliveSourcesMethodDescriptor = auth0SupportServiceDescriptor.Methods().ByName("KeepaliveSources")
-)
-
 // Auth0SupportClient is a client for the auth0support.Auth0Support service.
 type Auth0SupportClient interface {
 	// create a new user on first login
@@ -66,17 +59,18 @@ type Auth0SupportClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewAuth0SupportClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) Auth0SupportClient {
 	baseURL = strings.TrimRight(baseURL, "/")
+	auth0SupportMethods := sdp_go.File_auth0support_proto.Services().ByName("Auth0Support").Methods()
 	return &auth0SupportClient{
 		createUser: connect.NewClient[sdp_go.Auth0CreateUserRequest, sdp_go.Auth0CreateUserResponse](
 			httpClient,
 			baseURL+Auth0SupportCreateUserProcedure,
-			connect.WithSchema(auth0SupportCreateUserMethodDescriptor),
+			connect.WithSchema(auth0SupportMethods.ByName("CreateUser")),
 			connect.WithClientOptions(opts...),
 		),
 		keepaliveSources: connect.NewClient[sdp_go.AdminKeepaliveSourcesRequest, sdp_go.KeepaliveSourcesResponse](
 			httpClient,
 			baseURL+Auth0SupportKeepaliveSourcesProcedure,
-			connect.WithSchema(auth0SupportKeepaliveSourcesMethodDescriptor),
+			connect.WithSchema(auth0SupportMethods.ByName("KeepaliveSources")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -114,16 +108,17 @@ type Auth0SupportHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewAuth0SupportHandler(svc Auth0SupportHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	auth0SupportMethods := sdp_go.File_auth0support_proto.Services().ByName("Auth0Support").Methods()
 	auth0SupportCreateUserHandler := connect.NewUnaryHandler(
 		Auth0SupportCreateUserProcedure,
 		svc.CreateUser,
-		connect.WithSchema(auth0SupportCreateUserMethodDescriptor),
+		connect.WithSchema(auth0SupportMethods.ByName("CreateUser")),
 		connect.WithHandlerOptions(opts...),
 	)
 	auth0SupportKeepaliveSourcesHandler := connect.NewUnaryHandler(
 		Auth0SupportKeepaliveSourcesProcedure,
 		svc.KeepaliveSources,
-		connect.WithSchema(auth0SupportKeepaliveSourcesMethodDescriptor),
+		connect.WithSchema(auth0SupportMethods.ByName("KeepaliveSources")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/auth0support.Auth0Support/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

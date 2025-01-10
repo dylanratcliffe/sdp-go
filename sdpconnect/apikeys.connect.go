@@ -55,18 +55,6 @@ const (
 	ApiKeyServiceExchangeKeyForTokenProcedure = "/apikeys.ApiKeyService/ExchangeKeyForToken"
 )
 
-// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
-var (
-	apiKeyServiceServiceDescriptor                   = sdp_go.File_apikeys_proto.Services().ByName("ApiKeyService")
-	apiKeyServiceCreateAPIKeyMethodDescriptor        = apiKeyServiceServiceDescriptor.Methods().ByName("CreateAPIKey")
-	apiKeyServiceRefreshAPIKeyMethodDescriptor       = apiKeyServiceServiceDescriptor.Methods().ByName("RefreshAPIKey")
-	apiKeyServiceGetAPIKeyMethodDescriptor           = apiKeyServiceServiceDescriptor.Methods().ByName("GetAPIKey")
-	apiKeyServiceUpdateAPIKeyMethodDescriptor        = apiKeyServiceServiceDescriptor.Methods().ByName("UpdateAPIKey")
-	apiKeyServiceListAPIKeysMethodDescriptor         = apiKeyServiceServiceDescriptor.Methods().ByName("ListAPIKeys")
-	apiKeyServiceDeleteAPIKeyMethodDescriptor        = apiKeyServiceServiceDescriptor.Methods().ByName("DeleteAPIKey")
-	apiKeyServiceExchangeKeyForTokenMethodDescriptor = apiKeyServiceServiceDescriptor.Methods().ByName("ExchangeKeyForToken")
-)
-
 // ApiKeyServiceClient is a client for the apikeys.ApiKeyService service.
 type ApiKeyServiceClient interface {
 	// Creates an API key, pending access token generation from Auth0. The key
@@ -95,47 +83,48 @@ type ApiKeyServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewApiKeyServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) ApiKeyServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
+	apiKeyServiceMethods := sdp_go.File_apikeys_proto.Services().ByName("ApiKeyService").Methods()
 	return &apiKeyServiceClient{
 		createAPIKey: connect.NewClient[sdp_go.CreateAPIKeyRequest, sdp_go.CreateAPIKeyResponse](
 			httpClient,
 			baseURL+ApiKeyServiceCreateAPIKeyProcedure,
-			connect.WithSchema(apiKeyServiceCreateAPIKeyMethodDescriptor),
+			connect.WithSchema(apiKeyServiceMethods.ByName("CreateAPIKey")),
 			connect.WithClientOptions(opts...),
 		),
 		refreshAPIKey: connect.NewClient[sdp_go.RefreshAPIKeyRequest, sdp_go.RefreshAPIKeyResponse](
 			httpClient,
 			baseURL+ApiKeyServiceRefreshAPIKeyProcedure,
-			connect.WithSchema(apiKeyServiceRefreshAPIKeyMethodDescriptor),
+			connect.WithSchema(apiKeyServiceMethods.ByName("RefreshAPIKey")),
 			connect.WithClientOptions(opts...),
 		),
 		getAPIKey: connect.NewClient[sdp_go.GetAPIKeyRequest, sdp_go.GetAPIKeyResponse](
 			httpClient,
 			baseURL+ApiKeyServiceGetAPIKeyProcedure,
-			connect.WithSchema(apiKeyServiceGetAPIKeyMethodDescriptor),
+			connect.WithSchema(apiKeyServiceMethods.ByName("GetAPIKey")),
 			connect.WithClientOptions(opts...),
 		),
 		updateAPIKey: connect.NewClient[sdp_go.UpdateAPIKeyRequest, sdp_go.UpdateAPIKeyResponse](
 			httpClient,
 			baseURL+ApiKeyServiceUpdateAPIKeyProcedure,
-			connect.WithSchema(apiKeyServiceUpdateAPIKeyMethodDescriptor),
+			connect.WithSchema(apiKeyServiceMethods.ByName("UpdateAPIKey")),
 			connect.WithClientOptions(opts...),
 		),
 		listAPIKeys: connect.NewClient[sdp_go.ListAPIKeysRequest, sdp_go.ListAPIKeysResponse](
 			httpClient,
 			baseURL+ApiKeyServiceListAPIKeysProcedure,
-			connect.WithSchema(apiKeyServiceListAPIKeysMethodDescriptor),
+			connect.WithSchema(apiKeyServiceMethods.ByName("ListAPIKeys")),
 			connect.WithClientOptions(opts...),
 		),
 		deleteAPIKey: connect.NewClient[sdp_go.DeleteAPIKeyRequest, sdp_go.DeleteAPIKeyResponse](
 			httpClient,
 			baseURL+ApiKeyServiceDeleteAPIKeyProcedure,
-			connect.WithSchema(apiKeyServiceDeleteAPIKeyMethodDescriptor),
+			connect.WithSchema(apiKeyServiceMethods.ByName("DeleteAPIKey")),
 			connect.WithClientOptions(opts...),
 		),
 		exchangeKeyForToken: connect.NewClient[sdp_go.ExchangeKeyForTokenRequest, sdp_go.ExchangeKeyForTokenResponse](
 			httpClient,
 			baseURL+ApiKeyServiceExchangeKeyForTokenProcedure,
-			connect.WithSchema(apiKeyServiceExchangeKeyForTokenMethodDescriptor),
+			connect.WithSchema(apiKeyServiceMethods.ByName("ExchangeKeyForToken")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -212,46 +201,47 @@ type ApiKeyServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewApiKeyServiceHandler(svc ApiKeyServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	apiKeyServiceMethods := sdp_go.File_apikeys_proto.Services().ByName("ApiKeyService").Methods()
 	apiKeyServiceCreateAPIKeyHandler := connect.NewUnaryHandler(
 		ApiKeyServiceCreateAPIKeyProcedure,
 		svc.CreateAPIKey,
-		connect.WithSchema(apiKeyServiceCreateAPIKeyMethodDescriptor),
+		connect.WithSchema(apiKeyServiceMethods.ByName("CreateAPIKey")),
 		connect.WithHandlerOptions(opts...),
 	)
 	apiKeyServiceRefreshAPIKeyHandler := connect.NewUnaryHandler(
 		ApiKeyServiceRefreshAPIKeyProcedure,
 		svc.RefreshAPIKey,
-		connect.WithSchema(apiKeyServiceRefreshAPIKeyMethodDescriptor),
+		connect.WithSchema(apiKeyServiceMethods.ByName("RefreshAPIKey")),
 		connect.WithHandlerOptions(opts...),
 	)
 	apiKeyServiceGetAPIKeyHandler := connect.NewUnaryHandler(
 		ApiKeyServiceGetAPIKeyProcedure,
 		svc.GetAPIKey,
-		connect.WithSchema(apiKeyServiceGetAPIKeyMethodDescriptor),
+		connect.WithSchema(apiKeyServiceMethods.ByName("GetAPIKey")),
 		connect.WithHandlerOptions(opts...),
 	)
 	apiKeyServiceUpdateAPIKeyHandler := connect.NewUnaryHandler(
 		ApiKeyServiceUpdateAPIKeyProcedure,
 		svc.UpdateAPIKey,
-		connect.WithSchema(apiKeyServiceUpdateAPIKeyMethodDescriptor),
+		connect.WithSchema(apiKeyServiceMethods.ByName("UpdateAPIKey")),
 		connect.WithHandlerOptions(opts...),
 	)
 	apiKeyServiceListAPIKeysHandler := connect.NewUnaryHandler(
 		ApiKeyServiceListAPIKeysProcedure,
 		svc.ListAPIKeys,
-		connect.WithSchema(apiKeyServiceListAPIKeysMethodDescriptor),
+		connect.WithSchema(apiKeyServiceMethods.ByName("ListAPIKeys")),
 		connect.WithHandlerOptions(opts...),
 	)
 	apiKeyServiceDeleteAPIKeyHandler := connect.NewUnaryHandler(
 		ApiKeyServiceDeleteAPIKeyProcedure,
 		svc.DeleteAPIKey,
-		connect.WithSchema(apiKeyServiceDeleteAPIKeyMethodDescriptor),
+		connect.WithSchema(apiKeyServiceMethods.ByName("DeleteAPIKey")),
 		connect.WithHandlerOptions(opts...),
 	)
 	apiKeyServiceExchangeKeyForTokenHandler := connect.NewUnaryHandler(
 		ApiKeyServiceExchangeKeyForTokenProcedure,
 		svc.ExchangeKeyForToken,
-		connect.WithSchema(apiKeyServiceExchangeKeyForTokenMethodDescriptor),
+		connect.WithSchema(apiKeyServiceMethods.ByName("ExchangeKeyForToken")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/apikeys.ApiKeyService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

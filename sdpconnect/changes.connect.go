@@ -160,54 +160,6 @@ const (
 	AutoTaggingServiceTestRuleProcedure = "/changes.AutoTaggingService/TestRule"
 )
 
-// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
-var (
-	changesServiceServiceDescriptor                         = sdp_go.File_changes_proto.Services().ByName("ChangesService")
-	changesServiceListAppsMethodDescriptor                  = changesServiceServiceDescriptor.Methods().ByName("ListApps")
-	changesServiceCreateAppMethodDescriptor                 = changesServiceServiceDescriptor.Methods().ByName("CreateApp")
-	changesServiceCreateSimpleAppMethodDescriptor           = changesServiceServiceDescriptor.Methods().ByName("CreateSimpleApp")
-	changesServiceGetAppMethodDescriptor                    = changesServiceServiceDescriptor.Methods().ByName("GetApp")
-	changesServiceUpdateAppMethodDescriptor                 = changesServiceServiceDescriptor.Methods().ByName("UpdateApp")
-	changesServiceDeleteAppMethodDescriptor                 = changesServiceServiceDescriptor.Methods().ByName("DeleteApp")
-	changesServiceListChangesMethodDescriptor               = changesServiceServiceDescriptor.Methods().ByName("ListChanges")
-	changesServiceListChangesByStatusMethodDescriptor       = changesServiceServiceDescriptor.Methods().ByName("ListChangesByStatus")
-	changesServiceCreateChangeMethodDescriptor              = changesServiceServiceDescriptor.Methods().ByName("CreateChange")
-	changesServiceGetChangeMethodDescriptor                 = changesServiceServiceDescriptor.Methods().ByName("GetChange")
-	changesServiceGetChangeRisksMethodDescriptor            = changesServiceServiceDescriptor.Methods().ByName("GetChangeRisks")
-	changesServiceGetChangeArchiveMethodDescriptor          = changesServiceServiceDescriptor.Methods().ByName("GetChangeArchive")
-	changesServiceUpdateChangeMethodDescriptor              = changesServiceServiceDescriptor.Methods().ByName("UpdateChange")
-	changesServiceDeleteChangeMethodDescriptor              = changesServiceServiceDescriptor.Methods().ByName("DeleteChange")
-	changesServiceListChangesBySnapshotUUIDMethodDescriptor = changesServiceServiceDescriptor.Methods().ByName("ListChangesBySnapshotUUID")
-	changesServiceGetChangeTimelineMethodDescriptor         = changesServiceServiceDescriptor.Methods().ByName("GetChangeTimeline")
-	changesServiceRefreshStateMethodDescriptor              = changesServiceServiceDescriptor.Methods().ByName("RefreshState")
-	changesServiceCalculateBlastRadiusMethodDescriptor      = changesServiceServiceDescriptor.Methods().ByName("CalculateBlastRadius")
-	changesServiceStartChangeMethodDescriptor               = changesServiceServiceDescriptor.Methods().ByName("StartChange")
-	changesServiceEndChangeMethodDescriptor                 = changesServiceServiceDescriptor.Methods().ByName("EndChange")
-	changesServiceSimulateChangeMethodDescriptor            = changesServiceServiceDescriptor.Methods().ByName("SimulateChange")
-	changesServiceGetOnboardingMethodDescriptor             = changesServiceServiceDescriptor.Methods().ByName("GetOnboarding")
-	changesServiceUpdateOnboardingMethodDescriptor          = changesServiceServiceDescriptor.Methods().ByName("UpdateOnboarding")
-	changesServiceListHomeAppsMethodDescriptor              = changesServiceServiceDescriptor.Methods().ByName("ListHomeApps")
-	changesServiceListHomeChangesMethodDescriptor           = changesServiceServiceDescriptor.Methods().ByName("ListHomeChanges")
-	changesServiceGetAppSummaryMethodDescriptor             = changesServiceServiceDescriptor.Methods().ByName("GetAppSummary")
-	changesServiceGetAppSummariesMethodDescriptor           = changesServiceServiceDescriptor.Methods().ByName("GetAppSummaries")
-	changesServiceListAppChangesMethodDescriptor            = changesServiceServiceDescriptor.Methods().ByName("ListAppChanges")
-	changesServiceListAppChangesSummaryMethodDescriptor     = changesServiceServiceDescriptor.Methods().ByName("ListAppChangesSummary")
-	changesServiceUpdateChangingItemsMethodDescriptor       = changesServiceServiceDescriptor.Methods().ByName("UpdateChangingItems")
-	changesServiceUpdatePlannedChangesMethodDescriptor      = changesServiceServiceDescriptor.Methods().ByName("UpdatePlannedChanges")
-	changesServiceGetAffectedAppsMethodDescriptor           = changesServiceServiceDescriptor.Methods().ByName("GetAffectedApps")
-	changesServiceListChangingItemsSummaryMethodDescriptor  = changesServiceServiceDescriptor.Methods().ByName("ListChangingItemsSummary")
-	changesServiceGetDiffMethodDescriptor                   = changesServiceServiceDescriptor.Methods().ByName("GetDiff")
-	changesServicePopulateChangeFiltersMethodDescriptor     = changesServiceServiceDescriptor.Methods().ByName("PopulateChangeFilters")
-	autoTaggingServiceServiceDescriptor                     = sdp_go.File_changes_proto.Services().ByName("AutoTaggingService")
-	autoTaggingServiceListRulesMethodDescriptor             = autoTaggingServiceServiceDescriptor.Methods().ByName("ListRules")
-	autoTaggingServiceCreateRuleMethodDescriptor            = autoTaggingServiceServiceDescriptor.Methods().ByName("CreateRule")
-	autoTaggingServiceGetRuleMethodDescriptor               = autoTaggingServiceServiceDescriptor.Methods().ByName("GetRule")
-	autoTaggingServiceUpdateRuleMethodDescriptor            = autoTaggingServiceServiceDescriptor.Methods().ByName("UpdateRule")
-	autoTaggingServiceDeleteRuleMethodDescriptor            = autoTaggingServiceServiceDescriptor.Methods().ByName("DeleteRule")
-	autoTaggingServiceExportRuleMethodDescriptor            = autoTaggingServiceServiceDescriptor.Methods().ByName("ExportRule")
-	autoTaggingServiceTestRuleMethodDescriptor              = autoTaggingServiceServiceDescriptor.Methods().ByName("TestRule")
-)
-
 // ChangesServiceClient is a client for the changes.ChangesService service.
 type ChangesServiceClient interface {
 	// Lists all apps
@@ -317,215 +269,216 @@ type ChangesServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewChangesServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) ChangesServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
+	changesServiceMethods := sdp_go.File_changes_proto.Services().ByName("ChangesService").Methods()
 	return &changesServiceClient{
 		listApps: connect.NewClient[sdp_go.ListAppsRequest, sdp_go.ListAppsResponse](
 			httpClient,
 			baseURL+ChangesServiceListAppsProcedure,
-			connect.WithSchema(changesServiceListAppsMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("ListApps")),
 			connect.WithClientOptions(opts...),
 		),
 		createApp: connect.NewClient[sdp_go.CreateAppRequest, sdp_go.CreateAppResponse](
 			httpClient,
 			baseURL+ChangesServiceCreateAppProcedure,
-			connect.WithSchema(changesServiceCreateAppMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("CreateApp")),
 			connect.WithClientOptions(opts...),
 		),
 		createSimpleApp: connect.NewClient[sdp_go.CreateSimpleAppRequest, sdp_go.CreateSimpleAppResponse](
 			httpClient,
 			baseURL+ChangesServiceCreateSimpleAppProcedure,
-			connect.WithSchema(changesServiceCreateSimpleAppMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("CreateSimpleApp")),
 			connect.WithClientOptions(opts...),
 		),
 		getApp: connect.NewClient[sdp_go.GetAppRequest, sdp_go.GetAppResponse](
 			httpClient,
 			baseURL+ChangesServiceGetAppProcedure,
-			connect.WithSchema(changesServiceGetAppMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("GetApp")),
 			connect.WithClientOptions(opts...),
 		),
 		updateApp: connect.NewClient[sdp_go.UpdateAppRequest, sdp_go.UpdateAppResponse](
 			httpClient,
 			baseURL+ChangesServiceUpdateAppProcedure,
-			connect.WithSchema(changesServiceUpdateAppMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("UpdateApp")),
 			connect.WithClientOptions(opts...),
 		),
 		deleteApp: connect.NewClient[sdp_go.DeleteAppRequest, sdp_go.DeleteAppResponse](
 			httpClient,
 			baseURL+ChangesServiceDeleteAppProcedure,
-			connect.WithSchema(changesServiceDeleteAppMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("DeleteApp")),
 			connect.WithClientOptions(opts...),
 		),
 		listChanges: connect.NewClient[sdp_go.ListChangesRequest, sdp_go.ListChangesResponse](
 			httpClient,
 			baseURL+ChangesServiceListChangesProcedure,
-			connect.WithSchema(changesServiceListChangesMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("ListChanges")),
 			connect.WithClientOptions(opts...),
 		),
 		listChangesByStatus: connect.NewClient[sdp_go.ListChangesByStatusRequest, sdp_go.ListChangesByStatusResponse](
 			httpClient,
 			baseURL+ChangesServiceListChangesByStatusProcedure,
-			connect.WithSchema(changesServiceListChangesByStatusMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("ListChangesByStatus")),
 			connect.WithClientOptions(opts...),
 		),
 		createChange: connect.NewClient[sdp_go.CreateChangeRequest, sdp_go.CreateChangeResponse](
 			httpClient,
 			baseURL+ChangesServiceCreateChangeProcedure,
-			connect.WithSchema(changesServiceCreateChangeMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("CreateChange")),
 			connect.WithClientOptions(opts...),
 		),
 		getChange: connect.NewClient[sdp_go.GetChangeRequest, sdp_go.GetChangeResponse](
 			httpClient,
 			baseURL+ChangesServiceGetChangeProcedure,
-			connect.WithSchema(changesServiceGetChangeMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("GetChange")),
 			connect.WithClientOptions(opts...),
 		),
 		getChangeRisks: connect.NewClient[sdp_go.GetChangeRisksRequest, sdp_go.GetChangeRisksResponse](
 			httpClient,
 			baseURL+ChangesServiceGetChangeRisksProcedure,
-			connect.WithSchema(changesServiceGetChangeRisksMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("GetChangeRisks")),
 			connect.WithClientOptions(opts...),
 		),
 		getChangeArchive: connect.NewClient[sdp_go.GetChangeArchiveRequest, sdp_go.GetChangeArchiveResponse](
 			httpClient,
 			baseURL+ChangesServiceGetChangeArchiveProcedure,
-			connect.WithSchema(changesServiceGetChangeArchiveMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("GetChangeArchive")),
 			connect.WithClientOptions(opts...),
 		),
 		updateChange: connect.NewClient[sdp_go.UpdateChangeRequest, sdp_go.UpdateChangeResponse](
 			httpClient,
 			baseURL+ChangesServiceUpdateChangeProcedure,
-			connect.WithSchema(changesServiceUpdateChangeMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("UpdateChange")),
 			connect.WithClientOptions(opts...),
 		),
 		deleteChange: connect.NewClient[sdp_go.DeleteChangeRequest, sdp_go.DeleteChangeResponse](
 			httpClient,
 			baseURL+ChangesServiceDeleteChangeProcedure,
-			connect.WithSchema(changesServiceDeleteChangeMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("DeleteChange")),
 			connect.WithClientOptions(opts...),
 		),
 		listChangesBySnapshotUUID: connect.NewClient[sdp_go.ListChangesBySnapshotUUIDRequest, sdp_go.ListChangesBySnapshotUUIDResponse](
 			httpClient,
 			baseURL+ChangesServiceListChangesBySnapshotUUIDProcedure,
-			connect.WithSchema(changesServiceListChangesBySnapshotUUIDMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("ListChangesBySnapshotUUID")),
 			connect.WithClientOptions(opts...),
 		),
 		getChangeTimeline: connect.NewClient[sdp_go.GetChangeTimelineRequest, sdp_go.GetChangeTimelineResponse](
 			httpClient,
 			baseURL+ChangesServiceGetChangeTimelineProcedure,
-			connect.WithSchema(changesServiceGetChangeTimelineMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("GetChangeTimeline")),
 			connect.WithClientOptions(opts...),
 		),
 		refreshState: connect.NewClient[sdp_go.RefreshStateRequest, sdp_go.RefreshStateResponse](
 			httpClient,
 			baseURL+ChangesServiceRefreshStateProcedure,
-			connect.WithSchema(changesServiceRefreshStateMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("RefreshState")),
 			connect.WithClientOptions(opts...),
 		),
 		calculateBlastRadius: connect.NewClient[sdp_go.CalculateBlastRadiusRequest, sdp_go.CalculateBlastRadiusResponse](
 			httpClient,
 			baseURL+ChangesServiceCalculateBlastRadiusProcedure,
-			connect.WithSchema(changesServiceCalculateBlastRadiusMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("CalculateBlastRadius")),
 			connect.WithClientOptions(opts...),
 		),
 		startChange: connect.NewClient[sdp_go.StartChangeRequest, sdp_go.StartChangeResponse](
 			httpClient,
 			baseURL+ChangesServiceStartChangeProcedure,
-			connect.WithSchema(changesServiceStartChangeMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("StartChange")),
 			connect.WithClientOptions(opts...),
 		),
 		endChange: connect.NewClient[sdp_go.EndChangeRequest, sdp_go.EndChangeResponse](
 			httpClient,
 			baseURL+ChangesServiceEndChangeProcedure,
-			connect.WithSchema(changesServiceEndChangeMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("EndChange")),
 			connect.WithClientOptions(opts...),
 		),
 		simulateChange: connect.NewClient[sdp_go.SimulateChangeRequest, sdp_go.SimulateChangeResponse](
 			httpClient,
 			baseURL+ChangesServiceSimulateChangeProcedure,
-			connect.WithSchema(changesServiceSimulateChangeMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("SimulateChange")),
 			connect.WithClientOptions(opts...),
 		),
 		getOnboarding: connect.NewClient[sdp_go.GetOnboardingRequest, sdp_go.GetOnboardingResponse](
 			httpClient,
 			baseURL+ChangesServiceGetOnboardingProcedure,
-			connect.WithSchema(changesServiceGetOnboardingMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("GetOnboarding")),
 			connect.WithClientOptions(opts...),
 		),
 		updateOnboarding: connect.NewClient[sdp_go.UpdateOnboardingRequest, sdp_go.UpdateOnboardingResponse](
 			httpClient,
 			baseURL+ChangesServiceUpdateOnboardingProcedure,
-			connect.WithSchema(changesServiceUpdateOnboardingMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("UpdateOnboarding")),
 			connect.WithClientOptions(opts...),
 		),
 		listHomeApps: connect.NewClient[sdp_go.ListHomeAppsRequest, sdp_go.ListHomeAppsResponse](
 			httpClient,
 			baseURL+ChangesServiceListHomeAppsProcedure,
-			connect.WithSchema(changesServiceListHomeAppsMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("ListHomeApps")),
 			connect.WithClientOptions(opts...),
 		),
 		listHomeChanges: connect.NewClient[sdp_go.ListHomeChangesRequest, sdp_go.ListHomeChangesResponse](
 			httpClient,
 			baseURL+ChangesServiceListHomeChangesProcedure,
-			connect.WithSchema(changesServiceListHomeChangesMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("ListHomeChanges")),
 			connect.WithClientOptions(opts...),
 		),
 		getAppSummary: connect.NewClient[sdp_go.GetAppSummaryRequest, sdp_go.GetAppSummaryResponse](
 			httpClient,
 			baseURL+ChangesServiceGetAppSummaryProcedure,
-			connect.WithSchema(changesServiceGetAppSummaryMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("GetAppSummary")),
 			connect.WithClientOptions(opts...),
 		),
 		getAppSummaries: connect.NewClient[sdp_go.GetAppSummariesRequest, sdp_go.GetAppSummariesResponse](
 			httpClient,
 			baseURL+ChangesServiceGetAppSummariesProcedure,
-			connect.WithSchema(changesServiceGetAppSummariesMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("GetAppSummaries")),
 			connect.WithClientOptions(opts...),
 		),
 		listAppChanges: connect.NewClient[sdp_go.ListAppChangesRequest, sdp_go.ListAppChangesResponse](
 			httpClient,
 			baseURL+ChangesServiceListAppChangesProcedure,
-			connect.WithSchema(changesServiceListAppChangesMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("ListAppChanges")),
 			connect.WithClientOptions(opts...),
 		),
 		listAppChangesSummary: connect.NewClient[sdp_go.ListAppChangesSummaryRequest, sdp_go.ListAppChangesSummaryResponse](
 			httpClient,
 			baseURL+ChangesServiceListAppChangesSummaryProcedure,
-			connect.WithSchema(changesServiceListAppChangesSummaryMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("ListAppChangesSummary")),
 			connect.WithClientOptions(opts...),
 		),
 		updateChangingItems: connect.NewClient[sdp_go.UpdateChangingItemsRequest, sdp_go.CalculateBlastRadiusResponse](
 			httpClient,
 			baseURL+ChangesServiceUpdateChangingItemsProcedure,
-			connect.WithSchema(changesServiceUpdateChangingItemsMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("UpdateChangingItems")),
 			connect.WithClientOptions(opts...),
 		),
 		updatePlannedChanges: connect.NewClient[sdp_go.UpdatePlannedChangesRequest, sdp_go.CalculateBlastRadiusResponse](
 			httpClient,
 			baseURL+ChangesServiceUpdatePlannedChangesProcedure,
-			connect.WithSchema(changesServiceUpdatePlannedChangesMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("UpdatePlannedChanges")),
 			connect.WithClientOptions(opts...),
 		),
 		getAffectedApps: connect.NewClient[sdp_go.GetAffectedAppsRequest, sdp_go.GetAffectedAppsResponse](
 			httpClient,
 			baseURL+ChangesServiceGetAffectedAppsProcedure,
-			connect.WithSchema(changesServiceGetAffectedAppsMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("GetAffectedApps")),
 			connect.WithClientOptions(opts...),
 		),
 		listChangingItemsSummary: connect.NewClient[sdp_go.ListChangingItemsSummaryRequest, sdp_go.ListChangingItemsSummaryResponse](
 			httpClient,
 			baseURL+ChangesServiceListChangingItemsSummaryProcedure,
-			connect.WithSchema(changesServiceListChangingItemsSummaryMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("ListChangingItemsSummary")),
 			connect.WithClientOptions(opts...),
 		),
 		getDiff: connect.NewClient[sdp_go.GetDiffRequest, sdp_go.GetDiffResponse](
 			httpClient,
 			baseURL+ChangesServiceGetDiffProcedure,
-			connect.WithSchema(changesServiceGetDiffMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("GetDiff")),
 			connect.WithClientOptions(opts...),
 		),
 		populateChangeFilters: connect.NewClient[sdp_go.PopulateChangeFiltersRequest, sdp_go.PopulateChangeFiltersResponse](
 			httpClient,
 			baseURL+ChangesServicePopulateChangeFiltersProcedure,
-			connect.WithSchema(changesServicePopulateChangeFiltersMethodDescriptor),
+			connect.WithSchema(changesServiceMethods.ByName("PopulateChangeFilters")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -851,214 +804,215 @@ type ChangesServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewChangesServiceHandler(svc ChangesServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	changesServiceMethods := sdp_go.File_changes_proto.Services().ByName("ChangesService").Methods()
 	changesServiceListAppsHandler := connect.NewUnaryHandler(
 		ChangesServiceListAppsProcedure,
 		svc.ListApps,
-		connect.WithSchema(changesServiceListAppsMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("ListApps")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceCreateAppHandler := connect.NewUnaryHandler(
 		ChangesServiceCreateAppProcedure,
 		svc.CreateApp,
-		connect.WithSchema(changesServiceCreateAppMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("CreateApp")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceCreateSimpleAppHandler := connect.NewUnaryHandler(
 		ChangesServiceCreateSimpleAppProcedure,
 		svc.CreateSimpleApp,
-		connect.WithSchema(changesServiceCreateSimpleAppMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("CreateSimpleApp")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceGetAppHandler := connect.NewUnaryHandler(
 		ChangesServiceGetAppProcedure,
 		svc.GetApp,
-		connect.WithSchema(changesServiceGetAppMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("GetApp")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceUpdateAppHandler := connect.NewUnaryHandler(
 		ChangesServiceUpdateAppProcedure,
 		svc.UpdateApp,
-		connect.WithSchema(changesServiceUpdateAppMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("UpdateApp")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceDeleteAppHandler := connect.NewUnaryHandler(
 		ChangesServiceDeleteAppProcedure,
 		svc.DeleteApp,
-		connect.WithSchema(changesServiceDeleteAppMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("DeleteApp")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceListChangesHandler := connect.NewUnaryHandler(
 		ChangesServiceListChangesProcedure,
 		svc.ListChanges,
-		connect.WithSchema(changesServiceListChangesMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("ListChanges")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceListChangesByStatusHandler := connect.NewUnaryHandler(
 		ChangesServiceListChangesByStatusProcedure,
 		svc.ListChangesByStatus,
-		connect.WithSchema(changesServiceListChangesByStatusMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("ListChangesByStatus")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceCreateChangeHandler := connect.NewUnaryHandler(
 		ChangesServiceCreateChangeProcedure,
 		svc.CreateChange,
-		connect.WithSchema(changesServiceCreateChangeMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("CreateChange")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceGetChangeHandler := connect.NewUnaryHandler(
 		ChangesServiceGetChangeProcedure,
 		svc.GetChange,
-		connect.WithSchema(changesServiceGetChangeMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("GetChange")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceGetChangeRisksHandler := connect.NewUnaryHandler(
 		ChangesServiceGetChangeRisksProcedure,
 		svc.GetChangeRisks,
-		connect.WithSchema(changesServiceGetChangeRisksMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("GetChangeRisks")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceGetChangeArchiveHandler := connect.NewUnaryHandler(
 		ChangesServiceGetChangeArchiveProcedure,
 		svc.GetChangeArchive,
-		connect.WithSchema(changesServiceGetChangeArchiveMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("GetChangeArchive")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceUpdateChangeHandler := connect.NewUnaryHandler(
 		ChangesServiceUpdateChangeProcedure,
 		svc.UpdateChange,
-		connect.WithSchema(changesServiceUpdateChangeMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("UpdateChange")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceDeleteChangeHandler := connect.NewUnaryHandler(
 		ChangesServiceDeleteChangeProcedure,
 		svc.DeleteChange,
-		connect.WithSchema(changesServiceDeleteChangeMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("DeleteChange")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceListChangesBySnapshotUUIDHandler := connect.NewUnaryHandler(
 		ChangesServiceListChangesBySnapshotUUIDProcedure,
 		svc.ListChangesBySnapshotUUID,
-		connect.WithSchema(changesServiceListChangesBySnapshotUUIDMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("ListChangesBySnapshotUUID")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceGetChangeTimelineHandler := connect.NewUnaryHandler(
 		ChangesServiceGetChangeTimelineProcedure,
 		svc.GetChangeTimeline,
-		connect.WithSchema(changesServiceGetChangeTimelineMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("GetChangeTimeline")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceRefreshStateHandler := connect.NewUnaryHandler(
 		ChangesServiceRefreshStateProcedure,
 		svc.RefreshState,
-		connect.WithSchema(changesServiceRefreshStateMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("RefreshState")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceCalculateBlastRadiusHandler := connect.NewServerStreamHandler(
 		ChangesServiceCalculateBlastRadiusProcedure,
 		svc.CalculateBlastRadius,
-		connect.WithSchema(changesServiceCalculateBlastRadiusMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("CalculateBlastRadius")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceStartChangeHandler := connect.NewServerStreamHandler(
 		ChangesServiceStartChangeProcedure,
 		svc.StartChange,
-		connect.WithSchema(changesServiceStartChangeMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("StartChange")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceEndChangeHandler := connect.NewServerStreamHandler(
 		ChangesServiceEndChangeProcedure,
 		svc.EndChange,
-		connect.WithSchema(changesServiceEndChangeMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("EndChange")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceSimulateChangeHandler := connect.NewServerStreamHandler(
 		ChangesServiceSimulateChangeProcedure,
 		svc.SimulateChange,
-		connect.WithSchema(changesServiceSimulateChangeMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("SimulateChange")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceGetOnboardingHandler := connect.NewUnaryHandler(
 		ChangesServiceGetOnboardingProcedure,
 		svc.GetOnboarding,
-		connect.WithSchema(changesServiceGetOnboardingMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("GetOnboarding")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceUpdateOnboardingHandler := connect.NewUnaryHandler(
 		ChangesServiceUpdateOnboardingProcedure,
 		svc.UpdateOnboarding,
-		connect.WithSchema(changesServiceUpdateOnboardingMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("UpdateOnboarding")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceListHomeAppsHandler := connect.NewUnaryHandler(
 		ChangesServiceListHomeAppsProcedure,
 		svc.ListHomeApps,
-		connect.WithSchema(changesServiceListHomeAppsMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("ListHomeApps")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceListHomeChangesHandler := connect.NewUnaryHandler(
 		ChangesServiceListHomeChangesProcedure,
 		svc.ListHomeChanges,
-		connect.WithSchema(changesServiceListHomeChangesMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("ListHomeChanges")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceGetAppSummaryHandler := connect.NewUnaryHandler(
 		ChangesServiceGetAppSummaryProcedure,
 		svc.GetAppSummary,
-		connect.WithSchema(changesServiceGetAppSummaryMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("GetAppSummary")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceGetAppSummariesHandler := connect.NewUnaryHandler(
 		ChangesServiceGetAppSummariesProcedure,
 		svc.GetAppSummaries,
-		connect.WithSchema(changesServiceGetAppSummariesMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("GetAppSummaries")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceListAppChangesHandler := connect.NewUnaryHandler(
 		ChangesServiceListAppChangesProcedure,
 		svc.ListAppChanges,
-		connect.WithSchema(changesServiceListAppChangesMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("ListAppChanges")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceListAppChangesSummaryHandler := connect.NewUnaryHandler(
 		ChangesServiceListAppChangesSummaryProcedure,
 		svc.ListAppChangesSummary,
-		connect.WithSchema(changesServiceListAppChangesSummaryMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("ListAppChangesSummary")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceUpdateChangingItemsHandler := connect.NewServerStreamHandler(
 		ChangesServiceUpdateChangingItemsProcedure,
 		svc.UpdateChangingItems,
-		connect.WithSchema(changesServiceUpdateChangingItemsMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("UpdateChangingItems")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceUpdatePlannedChangesHandler := connect.NewServerStreamHandler(
 		ChangesServiceUpdatePlannedChangesProcedure,
 		svc.UpdatePlannedChanges,
-		connect.WithSchema(changesServiceUpdatePlannedChangesMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("UpdatePlannedChanges")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceGetAffectedAppsHandler := connect.NewUnaryHandler(
 		ChangesServiceGetAffectedAppsProcedure,
 		svc.GetAffectedApps,
-		connect.WithSchema(changesServiceGetAffectedAppsMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("GetAffectedApps")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceListChangingItemsSummaryHandler := connect.NewUnaryHandler(
 		ChangesServiceListChangingItemsSummaryProcedure,
 		svc.ListChangingItemsSummary,
-		connect.WithSchema(changesServiceListChangingItemsSummaryMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("ListChangingItemsSummary")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServiceGetDiffHandler := connect.NewUnaryHandler(
 		ChangesServiceGetDiffProcedure,
 		svc.GetDiff,
-		connect.WithSchema(changesServiceGetDiffMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("GetDiff")),
 		connect.WithHandlerOptions(opts...),
 	)
 	changesServicePopulateChangeFiltersHandler := connect.NewUnaryHandler(
 		ChangesServicePopulateChangeFiltersProcedure,
 		svc.PopulateChangeFilters,
-		connect.WithSchema(changesServicePopulateChangeFiltersMethodDescriptor),
+		connect.WithSchema(changesServiceMethods.ByName("PopulateChangeFilters")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/changes.ChangesService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -1316,47 +1270,48 @@ type AutoTaggingServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewAutoTaggingServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) AutoTaggingServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
+	autoTaggingServiceMethods := sdp_go.File_changes_proto.Services().ByName("AutoTaggingService").Methods()
 	return &autoTaggingServiceClient{
 		listRules: connect.NewClient[sdp_go.ListRulesRequest, sdp_go.ListRulesResponse](
 			httpClient,
 			baseURL+AutoTaggingServiceListRulesProcedure,
-			connect.WithSchema(autoTaggingServiceListRulesMethodDescriptor),
+			connect.WithSchema(autoTaggingServiceMethods.ByName("ListRules")),
 			connect.WithClientOptions(opts...),
 		),
 		createRule: connect.NewClient[sdp_go.CreateRuleRequest, sdp_go.CreateRuleResponse](
 			httpClient,
 			baseURL+AutoTaggingServiceCreateRuleProcedure,
-			connect.WithSchema(autoTaggingServiceCreateRuleMethodDescriptor),
+			connect.WithSchema(autoTaggingServiceMethods.ByName("CreateRule")),
 			connect.WithClientOptions(opts...),
 		),
 		getRule: connect.NewClient[sdp_go.GetRuleRequest, sdp_go.GetRuleResponse](
 			httpClient,
 			baseURL+AutoTaggingServiceGetRuleProcedure,
-			connect.WithSchema(autoTaggingServiceGetRuleMethodDescriptor),
+			connect.WithSchema(autoTaggingServiceMethods.ByName("GetRule")),
 			connect.WithClientOptions(opts...),
 		),
 		updateRule: connect.NewClient[sdp_go.UpdateRuleRequest, sdp_go.UpdateRuleResponse](
 			httpClient,
 			baseURL+AutoTaggingServiceUpdateRuleProcedure,
-			connect.WithSchema(autoTaggingServiceUpdateRuleMethodDescriptor),
+			connect.WithSchema(autoTaggingServiceMethods.ByName("UpdateRule")),
 			connect.WithClientOptions(opts...),
 		),
 		deleteRule: connect.NewClient[sdp_go.DeleteRuleRequest, sdp_go.DeleteRuleResponse](
 			httpClient,
 			baseURL+AutoTaggingServiceDeleteRuleProcedure,
-			connect.WithSchema(autoTaggingServiceDeleteRuleMethodDescriptor),
+			connect.WithSchema(autoTaggingServiceMethods.ByName("DeleteRule")),
 			connect.WithClientOptions(opts...),
 		),
 		exportRule: connect.NewClient[sdp_go.ExportRuleRequest, sdp_go.ExportRuleResponse](
 			httpClient,
 			baseURL+AutoTaggingServiceExportRuleProcedure,
-			connect.WithSchema(autoTaggingServiceExportRuleMethodDescriptor),
+			connect.WithSchema(autoTaggingServiceMethods.ByName("ExportRule")),
 			connect.WithClientOptions(opts...),
 		),
 		testRule: connect.NewClient[sdp_go.TestRuleRequest, sdp_go.TestRuleResponse](
 			httpClient,
 			baseURL+AutoTaggingServiceTestRuleProcedure,
-			connect.WithSchema(autoTaggingServiceTestRuleMethodDescriptor),
+			connect.WithSchema(autoTaggingServiceMethods.ByName("TestRule")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -1439,46 +1394,47 @@ type AutoTaggingServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewAutoTaggingServiceHandler(svc AutoTaggingServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	autoTaggingServiceMethods := sdp_go.File_changes_proto.Services().ByName("AutoTaggingService").Methods()
 	autoTaggingServiceListRulesHandler := connect.NewUnaryHandler(
 		AutoTaggingServiceListRulesProcedure,
 		svc.ListRules,
-		connect.WithSchema(autoTaggingServiceListRulesMethodDescriptor),
+		connect.WithSchema(autoTaggingServiceMethods.ByName("ListRules")),
 		connect.WithHandlerOptions(opts...),
 	)
 	autoTaggingServiceCreateRuleHandler := connect.NewUnaryHandler(
 		AutoTaggingServiceCreateRuleProcedure,
 		svc.CreateRule,
-		connect.WithSchema(autoTaggingServiceCreateRuleMethodDescriptor),
+		connect.WithSchema(autoTaggingServiceMethods.ByName("CreateRule")),
 		connect.WithHandlerOptions(opts...),
 	)
 	autoTaggingServiceGetRuleHandler := connect.NewUnaryHandler(
 		AutoTaggingServiceGetRuleProcedure,
 		svc.GetRule,
-		connect.WithSchema(autoTaggingServiceGetRuleMethodDescriptor),
+		connect.WithSchema(autoTaggingServiceMethods.ByName("GetRule")),
 		connect.WithHandlerOptions(opts...),
 	)
 	autoTaggingServiceUpdateRuleHandler := connect.NewUnaryHandler(
 		AutoTaggingServiceUpdateRuleProcedure,
 		svc.UpdateRule,
-		connect.WithSchema(autoTaggingServiceUpdateRuleMethodDescriptor),
+		connect.WithSchema(autoTaggingServiceMethods.ByName("UpdateRule")),
 		connect.WithHandlerOptions(opts...),
 	)
 	autoTaggingServiceDeleteRuleHandler := connect.NewUnaryHandler(
 		AutoTaggingServiceDeleteRuleProcedure,
 		svc.DeleteRule,
-		connect.WithSchema(autoTaggingServiceDeleteRuleMethodDescriptor),
+		connect.WithSchema(autoTaggingServiceMethods.ByName("DeleteRule")),
 		connect.WithHandlerOptions(opts...),
 	)
 	autoTaggingServiceExportRuleHandler := connect.NewUnaryHandler(
 		AutoTaggingServiceExportRuleProcedure,
 		svc.ExportRule,
-		connect.WithSchema(autoTaggingServiceExportRuleMethodDescriptor),
+		connect.WithSchema(autoTaggingServiceMethods.ByName("ExportRule")),
 		connect.WithHandlerOptions(opts...),
 	)
 	autoTaggingServiceTestRuleHandler := connect.NewServerStreamHandler(
 		AutoTaggingServiceTestRuleProcedure,
 		svc.TestRule,
-		connect.WithSchema(autoTaggingServiceTestRuleMethodDescriptor),
+		connect.WithSchema(autoTaggingServiceMethods.ByName("TestRule")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/changes.AutoTaggingService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

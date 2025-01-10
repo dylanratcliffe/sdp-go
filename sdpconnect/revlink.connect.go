@@ -41,13 +41,6 @@ const (
 	RevlinkServiceIngestGatewayResponsesProcedure = "/revlink.RevlinkService/IngestGatewayResponses"
 )
 
-// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
-var (
-	revlinkServiceServiceDescriptor                      = sdp_go.File_revlink_proto.Services().ByName("RevlinkService")
-	revlinkServiceGetReverseLinksMethodDescriptor        = revlinkServiceServiceDescriptor.Methods().ByName("GetReverseLinks")
-	revlinkServiceIngestGatewayResponsesMethodDescriptor = revlinkServiceServiceDescriptor.Methods().ByName("IngestGatewayResponses")
-)
-
 // RevlinkServiceClient is a client for the revlink.RevlinkService service.
 type RevlinkServiceClient interface {
 	// Gets reverse links for a given item
@@ -65,17 +58,18 @@ type RevlinkServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewRevlinkServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) RevlinkServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
+	revlinkServiceMethods := sdp_go.File_revlink_proto.Services().ByName("RevlinkService").Methods()
 	return &revlinkServiceClient{
 		getReverseLinks: connect.NewClient[sdp_go.GetReverseLinksRequest, sdp_go.GetReverseLinksResponse](
 			httpClient,
 			baseURL+RevlinkServiceGetReverseLinksProcedure,
-			connect.WithSchema(revlinkServiceGetReverseLinksMethodDescriptor),
+			connect.WithSchema(revlinkServiceMethods.ByName("GetReverseLinks")),
 			connect.WithClientOptions(opts...),
 		),
 		ingestGatewayResponses: connect.NewClient[sdp_go.IngestGatewayResponseRequest, sdp_go.IngestGatewayResponsesResponse](
 			httpClient,
 			baseURL+RevlinkServiceIngestGatewayResponsesProcedure,
-			connect.WithSchema(revlinkServiceIngestGatewayResponsesMethodDescriptor),
+			connect.WithSchema(revlinkServiceMethods.ByName("IngestGatewayResponses")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -111,16 +105,17 @@ type RevlinkServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewRevlinkServiceHandler(svc RevlinkServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	revlinkServiceMethods := sdp_go.File_revlink_proto.Services().ByName("RevlinkService").Methods()
 	revlinkServiceGetReverseLinksHandler := connect.NewUnaryHandler(
 		RevlinkServiceGetReverseLinksProcedure,
 		svc.GetReverseLinks,
-		connect.WithSchema(revlinkServiceGetReverseLinksMethodDescriptor),
+		connect.WithSchema(revlinkServiceMethods.ByName("GetReverseLinks")),
 		connect.WithHandlerOptions(opts...),
 	)
 	revlinkServiceIngestGatewayResponsesHandler := connect.NewClientStreamHandler(
 		RevlinkServiceIngestGatewayResponsesProcedure,
 		svc.IngestGatewayResponses,
-		connect.WithSchema(revlinkServiceIngestGatewayResponsesMethodDescriptor),
+		connect.WithSchema(revlinkServiceMethods.ByName("IngestGatewayResponses")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/revlink.RevlinkService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -50,16 +50,6 @@ const (
 	ConfigurationServiceDeleteHcpConfigProcedure = "/config.ConfigurationService/DeleteHcpConfig"
 )
 
-// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
-var (
-	configurationServiceServiceDescriptor                   = sdp_go.File_config_proto.Services().ByName("ConfigurationService")
-	configurationServiceGetAccountConfigMethodDescriptor    = configurationServiceServiceDescriptor.Methods().ByName("GetAccountConfig")
-	configurationServiceUpdateAccountConfigMethodDescriptor = configurationServiceServiceDescriptor.Methods().ByName("UpdateAccountConfig")
-	configurationServiceCreateHcpConfigMethodDescriptor     = configurationServiceServiceDescriptor.Methods().ByName("CreateHcpConfig")
-	configurationServiceGetHcpConfigMethodDescriptor        = configurationServiceServiceDescriptor.Methods().ByName("GetHcpConfig")
-	configurationServiceDeleteHcpConfigMethodDescriptor     = configurationServiceServiceDescriptor.Methods().ByName("DeleteHcpConfig")
-)
-
 // ConfigurationServiceClient is a client for the config.ConfigurationService service.
 type ConfigurationServiceClient interface {
 	// Get the account config for the user's account
@@ -85,35 +75,36 @@ type ConfigurationServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewConfigurationServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) ConfigurationServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
+	configurationServiceMethods := sdp_go.File_config_proto.Services().ByName("ConfigurationService").Methods()
 	return &configurationServiceClient{
 		getAccountConfig: connect.NewClient[sdp_go.GetAccountConfigRequest, sdp_go.GetAccountConfigResponse](
 			httpClient,
 			baseURL+ConfigurationServiceGetAccountConfigProcedure,
-			connect.WithSchema(configurationServiceGetAccountConfigMethodDescriptor),
+			connect.WithSchema(configurationServiceMethods.ByName("GetAccountConfig")),
 			connect.WithClientOptions(opts...),
 		),
 		updateAccountConfig: connect.NewClient[sdp_go.UpdateAccountConfigRequest, sdp_go.UpdateAccountConfigResponse](
 			httpClient,
 			baseURL+ConfigurationServiceUpdateAccountConfigProcedure,
-			connect.WithSchema(configurationServiceUpdateAccountConfigMethodDescriptor),
+			connect.WithSchema(configurationServiceMethods.ByName("UpdateAccountConfig")),
 			connect.WithClientOptions(opts...),
 		),
 		createHcpConfig: connect.NewClient[sdp_go.CreateHcpConfigRequest, sdp_go.CreateHcpConfigResponse](
 			httpClient,
 			baseURL+ConfigurationServiceCreateHcpConfigProcedure,
-			connect.WithSchema(configurationServiceCreateHcpConfigMethodDescriptor),
+			connect.WithSchema(configurationServiceMethods.ByName("CreateHcpConfig")),
 			connect.WithClientOptions(opts...),
 		),
 		getHcpConfig: connect.NewClient[sdp_go.GetHcpConfigRequest, sdp_go.GetHcpConfigResponse](
 			httpClient,
 			baseURL+ConfigurationServiceGetHcpConfigProcedure,
-			connect.WithSchema(configurationServiceGetHcpConfigMethodDescriptor),
+			connect.WithSchema(configurationServiceMethods.ByName("GetHcpConfig")),
 			connect.WithClientOptions(opts...),
 		),
 		deleteHcpConfig: connect.NewClient[sdp_go.DeleteHcpConfigRequest, sdp_go.DeleteHcpConfigResponse](
 			httpClient,
 			baseURL+ConfigurationServiceDeleteHcpConfigProcedure,
-			connect.WithSchema(configurationServiceDeleteHcpConfigMethodDescriptor),
+			connect.WithSchema(configurationServiceMethods.ByName("DeleteHcpConfig")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -175,34 +166,35 @@ type ConfigurationServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewConfigurationServiceHandler(svc ConfigurationServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	configurationServiceMethods := sdp_go.File_config_proto.Services().ByName("ConfigurationService").Methods()
 	configurationServiceGetAccountConfigHandler := connect.NewUnaryHandler(
 		ConfigurationServiceGetAccountConfigProcedure,
 		svc.GetAccountConfig,
-		connect.WithSchema(configurationServiceGetAccountConfigMethodDescriptor),
+		connect.WithSchema(configurationServiceMethods.ByName("GetAccountConfig")),
 		connect.WithHandlerOptions(opts...),
 	)
 	configurationServiceUpdateAccountConfigHandler := connect.NewUnaryHandler(
 		ConfigurationServiceUpdateAccountConfigProcedure,
 		svc.UpdateAccountConfig,
-		connect.WithSchema(configurationServiceUpdateAccountConfigMethodDescriptor),
+		connect.WithSchema(configurationServiceMethods.ByName("UpdateAccountConfig")),
 		connect.WithHandlerOptions(opts...),
 	)
 	configurationServiceCreateHcpConfigHandler := connect.NewUnaryHandler(
 		ConfigurationServiceCreateHcpConfigProcedure,
 		svc.CreateHcpConfig,
-		connect.WithSchema(configurationServiceCreateHcpConfigMethodDescriptor),
+		connect.WithSchema(configurationServiceMethods.ByName("CreateHcpConfig")),
 		connect.WithHandlerOptions(opts...),
 	)
 	configurationServiceGetHcpConfigHandler := connect.NewUnaryHandler(
 		ConfigurationServiceGetHcpConfigProcedure,
 		svc.GetHcpConfig,
-		connect.WithSchema(configurationServiceGetHcpConfigMethodDescriptor),
+		connect.WithSchema(configurationServiceMethods.ByName("GetHcpConfig")),
 		connect.WithHandlerOptions(opts...),
 	)
 	configurationServiceDeleteHcpConfigHandler := connect.NewUnaryHandler(
 		ConfigurationServiceDeleteHcpConfigProcedure,
 		svc.DeleteHcpConfig,
-		connect.WithSchema(configurationServiceDeleteHcpConfigMethodDescriptor),
+		connect.WithSchema(configurationServiceMethods.ByName("DeleteHcpConfig")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/config.ConfigurationService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -39,13 +39,6 @@ const (
 	ConfigServiceSetConfigProcedure = "/cli.ConfigService/SetConfig"
 )
 
-// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
-var (
-	configServiceServiceDescriptor         = sdp_go.File_cli_proto.Services().ByName("ConfigService")
-	configServiceGetConfigMethodDescriptor = configServiceServiceDescriptor.Methods().ByName("GetConfig")
-	configServiceSetConfigMethodDescriptor = configServiceServiceDescriptor.Methods().ByName("SetConfig")
-)
-
 // ConfigServiceClient is a client for the cli.ConfigService service.
 type ConfigServiceClient interface {
 	GetConfig(context.Context, *connect.Request[sdp_go.GetConfigRequest]) (*connect.Response[sdp_go.GetConfigResponse], error)
@@ -61,17 +54,18 @@ type ConfigServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewConfigServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) ConfigServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
+	configServiceMethods := sdp_go.File_cli_proto.Services().ByName("ConfigService").Methods()
 	return &configServiceClient{
 		getConfig: connect.NewClient[sdp_go.GetConfigRequest, sdp_go.GetConfigResponse](
 			httpClient,
 			baseURL+ConfigServiceGetConfigProcedure,
-			connect.WithSchema(configServiceGetConfigMethodDescriptor),
+			connect.WithSchema(configServiceMethods.ByName("GetConfig")),
 			connect.WithClientOptions(opts...),
 		),
 		setConfig: connect.NewClient[sdp_go.SetConfigRequest, sdp_go.SetConfigResponse](
 			httpClient,
 			baseURL+ConfigServiceSetConfigProcedure,
-			connect.WithSchema(configServiceSetConfigMethodDescriptor),
+			connect.WithSchema(configServiceMethods.ByName("SetConfig")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -105,16 +99,17 @@ type ConfigServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewConfigServiceHandler(svc ConfigServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	configServiceMethods := sdp_go.File_cli_proto.Services().ByName("ConfigService").Methods()
 	configServiceGetConfigHandler := connect.NewUnaryHandler(
 		ConfigServiceGetConfigProcedure,
 		svc.GetConfig,
-		connect.WithSchema(configServiceGetConfigMethodDescriptor),
+		connect.WithSchema(configServiceMethods.ByName("GetConfig")),
 		connect.WithHandlerOptions(opts...),
 	)
 	configServiceSetConfigHandler := connect.NewUnaryHandler(
 		ConfigServiceSetConfigProcedure,
 		svc.SetConfig,
-		connect.WithSchema(configServiceSetConfigMethodDescriptor),
+		connect.WithSchema(configServiceMethods.ByName("SetConfig")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/cli.ConfigService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
