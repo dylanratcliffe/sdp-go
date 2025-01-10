@@ -138,7 +138,7 @@ func (c *anthropicConversation) SendMessage(ctx context.Context, userMessage str
 			response := strings.TrimPrefix(assistantResponse, "\n")
 
 			span.SetAttributes(
-				attribute.String("ovm.openai.assistantResponse", response),
+				attribute.String("ovm.llm.assistantResponse", response),
 			)
 
 			return response, nil
