@@ -135,7 +135,13 @@ func (c *anthropicConversation) SendMessage(ctx context.Context, userMessage str
 			// the LLM, and save the messages that were generated as this was
 			// successful
 			c.messages = updatedMessages
-			return strings.TrimPrefix(assistantResponse, "\n"), nil
+			response := strings.TrimPrefix(assistantResponse, "\n")
+
+			span.SetAttributes(
+				attribute.String("ovm.openai.assistantResponse", response),
+			)
+
+			return response, nil
 		}
 
 		toolResults := callToolsAnthropic(ctx, c.tools, toolCalls)
