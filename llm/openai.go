@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/overmindtech/sdp-go/tracing"
@@ -81,21 +82,21 @@ func (p *openAIProvider) NewConversation(ctx context.Context, systemPrompt strin
 	})
 	if err != nil {
 		err = fmt.Errorf("failed to create assistant: %w", err)
-		return nil, err
+		return nil, wrapRetryableErrorOpenAI(err)
 	}
 
 	cleanup = append(cleanup, func(ctx context.Context) error {
 		// Delete the assistant if something goes wrong
 		_, err := p.client.DeleteAssistant(ctx, assistant.ID)
 		err = fmt.Errorf("failed to delete assistant: %w", err)
-		return err
+		return wrapRetryableErrorOpenAI(err)
 	})
 
 	thread, err := p.client.CreateThread(ctx, openai.ThreadRequest{})
 	if err != nil {
 		err = fmt.Errorf("failed to create thread: %w", err)
 		err := cleanup.Run(ctx, err)
-		return nil, err
+		return nil, wrapRetryableErrorOpenAI(err)
 	}
 
 	return &openAIConversation{
@@ -118,7 +119,7 @@ func (c *openAIConversation) End(ctx context.Context) error {
 	_, threadErr := c.client.DeleteThread(ctx, c.thread.ID)
 	_, assistantErr := c.client.DeleteAssistant(ctx, c.assistant.ID)
 
-	return errors.Join(threadErr, assistantErr)
+	return wrapRetryableErrorOpenAI(errors.Join(threadErr, assistantErr))
 }
 
 func (c *openAIConversation) SendMessage(ctx context.Context, userMessage string) (string, error) {
@@ -141,7 +142,7 @@ func (c *openAIConversation) SendMessage(ctx context.Context, userMessage string
 	if err != nil {
 		err = fmt.Errorf("failed to create message: %w", err)
 		span.SetStatus(codes.Error, err.Error())
-		return "", err
+		return "", wrapRetryableErrorOpenAI(err)
 	}
 
 	// Add a cleanup task to delete the message so that this can be re-run
@@ -153,7 +154,7 @@ func (c *openAIConversation) SendMessage(ctx context.Context, userMessage string
 			deleteErr = fmt.Errorf("failed to delete message: %w", deleteErr)
 			err = errors.Join(err, deleteErr)
 		}
-		return err
+		return wrapRetryableErrorOpenAI(err)
 	})
 
 	// Run that thread
@@ -164,7 +165,7 @@ func (c *openAIConversation) SendMessage(ctx context.Context, userMessage string
 		err = fmt.Errorf("failed to create run: %w", err)
 		err = cleanup.Run(ctx, err)
 		span.SetStatus(codes.Error, err.Error())
-		return "", err
+		return "", wrapRetryableErrorOpenAI(err)
 	}
 
 	// Wait for the thread to be complete
@@ -184,7 +185,7 @@ func (c *openAIConversation) SendMessage(ctx context.Context, userMessage string
 			err = cleanup.Run(ctx, err)
 
 			span.SetStatus(codes.Error, err.Error())
-			return "", err
+			return "", wrapRetryableErrorOpenAI(err)
 		case <-ticker.C:
 			// Check to see if the run is done
 			run, err = c.client.RetrieveRun(ctx, c.thread.ID, run.ID)
@@ -192,7 +193,7 @@ func (c *openAIConversation) SendMessage(ctx context.Context, userMessage string
 				err = fmt.Errorf("failed to retrieve run: %w", err)
 				err = cleanup.Run(ctx, err)
 				span.SetStatus(codes.Error, err.Error())
-				return "", err
+				return "", wrapRetryableErrorOpenAI(err)
 			}
 
 			// Capture data from the LLM
@@ -227,7 +228,7 @@ func (c *openAIConversation) SendMessage(ctx context.Context, userMessage string
 					err = errors.New("tool call returned with no required actions")
 					err = cleanup.Run(ctx, err)
 					span.SetStatus(codes.Error, err.Error())
-					return "", err
+					return "", wrapRetryableErrorOpenAI(err)
 				}
 
 				switch requiredAction.Type {
@@ -238,7 +239,7 @@ func (c *openAIConversation) SendMessage(ctx context.Context, userMessage string
 						err = errors.New("tools were requested but SubmitToolOutputs was nil")
 						err = cleanup.Run(ctx, err)
 						span.SetStatus(codes.Error, err.Error())
-						return "", err
+						return "", wrapRetryableErrorOpenAI(err)
 					}
 
 					// run the tools, with a cancel context and a 2min timeout
@@ -255,7 +256,7 @@ func (c *openAIConversation) SendMessage(ctx context.Context, userMessage string
 						err = fmt.Errorf("failed to submit tool outputs: %w", err)
 						err = cleanup.Run(ctx, err)
 						span.SetStatus(codes.Error, err.Error())
-						return "", err
+						return "", wrapRetryableErrorOpenAI(err)
 					}
 				}
 			case openai.RunStatusCompleted:
@@ -271,24 +272,24 @@ func (c *openAIConversation) SendMessage(ctx context.Context, userMessage string
 					err = fmt.Errorf("failed to list messages: %w", err)
 					err = cleanup.Run(ctx, err)
 					span.SetStatus(codes.Error, err.Error())
-					return "", err
+					return "", wrapRetryableErrorOpenAI(err)
 				}
 
 				// Extract and return this message
 				if len(messages.Messages) == 0 {
 					err = errors.New("empty messages returned from API")
 					span.SetStatus(codes.Error, err.Error())
-					return "", err
+					return "", wrapRetryableErrorOpenAI(err)
 				}
 				if len(messages.Messages[0].Content) == 0 {
 					err = errors.New("empty content returned from API")
 					span.SetStatus(codes.Error, err.Error())
-					return "", err
+					return "", wrapRetryableErrorOpenAI(err)
 				}
 				if messages.Messages[0].Content[0].Text == nil {
 					err = errors.New("empty text returned from API")
 					span.SetStatus(codes.Error, err.Error())
-					return "", err
+					return "", wrapRetryableErrorOpenAI(err)
 				}
 
 				response := messages.Messages[0].Content[0].Text.Value
@@ -302,15 +303,32 @@ func (c *openAIConversation) SendMessage(ctx context.Context, userMessage string
 				err = errors.New("run was incomplete due to a token limit")
 				err = cleanup.Run(ctx, err)
 				span.SetStatus(codes.Error, err.Error())
-				return "", err
+				return "", wrapRetryableErrorOpenAI(err)
 			case openai.RunStatusFailed, openai.RunStatusExpired, openai.RunStatusCancelled:
 				err = fmt.Errorf("unexpected run status: %v", run.Status)
 				err = cleanup.Run(ctx, err)
 				span.SetStatus(codes.Error, err.Error())
-				return "", err
+				return "", wrapRetryableErrorOpenAI(err)
 			}
 		}
 	}
+}
+
+// Wraps an OpenAI error with a retryable error if the underlying error is
+// retryable
+func wrapRetryableErrorOpenAI(err error) error {
+	var apiErr *openai.APIError
+	if errors.As(err, &apiErr) {
+		switch apiErr.HTTPStatusCode {
+		case http.StatusTooManyRequests,
+			http.StatusInternalServerError,
+			http.StatusBadGateway:
+			// Wrap the error in a retryable error
+			return &RetryableError{Err: err}
+		}
+	}
+
+	return err
 }
 
 // Calls all required tools as part of the `submit_tool_outputs` phase of an
@@ -388,5 +406,5 @@ func (c cleanupTasks) Run(ctx context.Context, err error) error {
 		errs = append(errs, task(ctx))
 	}
 
-	return errors.Join(errs...)
+	return wrapRetryableErrorOpenAI(errors.Join(errs...))
 }

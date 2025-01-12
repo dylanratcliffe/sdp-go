@@ -7,10 +7,10 @@ import (
 	"github.com/invopop/jsonschema"
 )
 
-// Provider is the static and re-usable parts of a LLM integration. 
+// Provider is the static and re-usable parts of a LLM integration.
 // Initialization is provider specific and needs to be done before handing an implementation of this interface to the remaining infrastructure. See `NewAnthropicProvider` and `NewOpenAIProvider`.
 // After instantiation it is ready to start new conversations using the methods below.
-// Clean-up is provider specific and needs to be set up in advance when initializing the provider (e.g. through `defer`) 
+// Clean-up is provider specific and needs to be set up in advance when initializing the provider (e.g. through `defer`)
 type Provider interface {
 	// Creates a new conversation with the LLM. This will return a conversation
 	// that automatically tracks messages back and forth. The user is
@@ -67,6 +67,22 @@ type ToolImplementation interface {
 	Call(ctx context.Context, jsonInput []byte) (string, error)
 }
 
+// This represents an error returned from the LLM that can be retried, for
+// example server-side errors
+type RetryableError struct {
+	Err error
+}
+
+func (r *RetryableError) Error() string {
+	return r.Err.Error()
+}
+
+// Unwrap implements the Wrapper interface, allowing errors.Unwrap,
+// errors.Is, and errors.As to see the underlying error.
+func (r *RetryableError) Unwrap() error {
+	return r.Err
+}
+
 // This type is a helper that implements the `ToolImplementation` interface and
 // uses reflection to automatically determine the JSON schema, and to
 // deserialise the inputs to the tool. It is recommended that you use this when
@@ -77,31 +93,35 @@ type ToolImplementation interface {
 // example:
 //
 // ```go
+//
 //	type WeatherToolInput struct {
 //		Location string `json:"location" jsonschema_description:"The location that we should get the weather for"`
 //		Units    string `json:"units,omitempty" jsonschema:"enum=fahrenheit,enum=celsius"`
 //	}
+//
 // ```
 //
 // For tools that have to hold some local state (like auth tokens) it is recommended to embed this type:
 // ```go
-// type WeatherTool struct {
-// 	client *http.Client
-// 	Tool[WeatherToolInput]
-// }
 //
-// func NewWeatherTool(apiKey string) WeatherTool {
-// 	httpClient := NewWeatherClient(apiKey)
-// 	return WeatherTool{
-// 		client: httpClient,
-// 		Tool: Tool[WeatherToolInput]{
-// 			Name:        "weatherTool",
-// 			Description: "Does the weather thing",
-// 			Func: func(ctx context.Context, inputData InputType) (string, error) {
-// 				return "the weather thing", nil
-// 			}},
-// 	}
-// }
+//	type WeatherTool struct {
+//		client *http.Client
+//		Tool[WeatherToolInput]
+//	}
+//
+//	func NewWeatherTool(apiKey string) WeatherTool {
+//		httpClient := NewWeatherClient(apiKey)
+//		return WeatherTool{
+//			client: httpClient,
+//			Tool: Tool[WeatherToolInput]{
+//				Name:        "weatherTool",
+//				Description: "Does the weather thing",
+//				Func: func(ctx context.Context, inputData InputType) (string, error) {
+//					return "the weather thing", nil
+//				}},
+//		}
+//	}
+//
 // ```
 type Tool[InputType any] struct {
 	// The name of the tool. This must contains only A-z, 0-9, dashes and

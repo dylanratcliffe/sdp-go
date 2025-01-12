@@ -81,6 +81,54 @@ func TestNewOpenAIProvider(t *testing.T) {
 	})
 }
 
+func TestWrapRetryableError(t *testing.T) {
+	tests := []struct {
+		Name      string
+		Error     error
+		Retryable bool
+	}{
+		{
+			Name: "400",
+			Error: &openai.APIError{
+				HTTPStatusCode: 400,
+			},
+			Retryable: false,
+		},
+		{
+			Name: "429",
+			Error: &openai.APIError{
+				HTTPStatusCode: 429,
+			},
+			Retryable: true,
+		},
+		{
+			Name: "500",
+			Error: &openai.APIError{
+				HTTPStatusCode: 500,
+			},
+			Retryable: true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.Name, func(t *testing.T) {
+			err := wrapRetryableErrorOpenAI(test.Error)
+
+			var retryable *RetryableError
+			var isRetryable bool
+			if errors.As(err, &retryable) {
+				isRetryable = true
+			} else {
+				isRetryable = false
+			}
+
+			if isRetryable != test.Retryable {
+				t.Errorf("Expected retryable error to be %v, got %v", test.Retryable, isRetryable)
+			}
+		})
+	}
+}
+
 func TestCleanupTasks(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 
