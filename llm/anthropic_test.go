@@ -2,6 +2,7 @@ package llm
 
 import (
 	"context"
+	"errors"
 	"os"
 	"strings"
 	"testing"
@@ -53,4 +54,59 @@ func TestNewAnthropicProvider(t *testing.T) {
 			t.Errorf("expected the response to contain 'meatballs', but it didn't. Response: %v", response)
 		}
 	})
+}
+
+func TestWrapRetryableErrorAnthropic(t *testing.T) {
+	tests := []struct {
+		Name      string
+		Error     error
+		Retryable bool
+	}{
+		{
+			Name: "400",
+			Error: &anthropic.Error{
+				StatusCode: 400,
+			},
+			Retryable: false,
+		},
+		{
+			Name: "500",
+			Error: &anthropic.Error{
+				StatusCode: 500,
+			},
+			Retryable: true,
+		},
+		{
+			Name: "502",
+			Error: &anthropic.Error{
+				StatusCode: 502,
+			},
+			Retryable: true,
+		},
+		{
+			Name: "429",
+			Error: &anthropic.Error{
+				StatusCode: 429,
+			},
+			Retryable: true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.Name, func(t *testing.T) {
+			err := wrapRetryableErrorAnthropic(test.Error)
+
+			var retryable *RetryableError
+			var isRetryable bool
+			if errors.As(err, &retryable) {
+				isRetryable = true
+			} else {
+				isRetryable = false
+			}
+
+			if isRetryable != test.Retryable {
+				t.Errorf("Expected retryable error to be %v, got %v", test.Retryable, isRetryable)
+			}
+		})
+	}
 }

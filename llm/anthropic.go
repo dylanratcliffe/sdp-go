@@ -2,7 +2,9 @@ package llm
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/anthropics/anthropic-sdk-go"
@@ -100,7 +102,7 @@ func (c *anthropicConversation) SendMessage(ctx context.Context, userMessage str
 		if err != nil {
 			err = fmt.Errorf("error sending message: %w", err)
 			span.SetStatus(codes.Error, err.Error())
-			return "", err
+			return "", wrapRetryableErrorAnthropic(err)
 		}
 
 		// Extract tracing information from the response
@@ -149,6 +151,23 @@ func (c *anthropicConversation) SendMessage(ctx context.Context, userMessage str
 		// Add the responses to the messages
 		updatedMessages = append(updatedMessages, anthropic.NewUserMessage(toolResults...))
 	}
+}
+
+// Wraps an OpenAI error with a retryable error if the underlying error is
+// retryable
+func wrapRetryableErrorAnthropic(err error) error {
+	var apiErr *anthropic.Error
+	if errors.As(err, &apiErr) {
+		switch apiErr.StatusCode {
+		case http.StatusTooManyRequests,
+			http.StatusInternalServerError,
+			http.StatusBadGateway:
+			// Wrap the error in a retryable error
+			return &RetryableError{Err: err}
+		}
+	}
+
+	return err
 }
 
 func callToolsAnthropic(ctx context.Context, tools []ToolImplementation, toolCalls []anthropic.ContentBlock) []anthropic.MessageParamContentUnion {
